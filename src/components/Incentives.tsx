@@ -30,8 +30,11 @@ export function Incentives() {
               The incentive loop
             </h2>
             <p className="mt-4 text-lg leading-relaxed text-ink-muted">
-              Why people play, why it pays, and why the lab keeps running. One loop,
-              settled on-chain so stakes, payouts, and the leaderboard are verifiable.
+              A reflexive incentive game: the agent reacts to you, you react to it,
+              and the curve reacts to both — a small risk/reward simulation of
+              reading intent. Why people play, why it pays, and why the lab keeps
+              running. One loop, settled on-chain so stakes, payouts, and the
+              leaderboard are verifiable.
             </p>
           </div>
         </Reveal>
