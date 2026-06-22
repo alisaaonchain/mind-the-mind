@@ -1,6 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useGame } from "@/lib/game/useGame";
+import { fetchChainSeed } from "@/lib/game/seedClient";
+import { Briefing } from "@/components/play/Briefing";
 import { InterrogationRoom } from "@/components/play/InterrogationRoom";
 import { TradingRoom } from "@/components/play/TradingRoom";
 import { GuessScreen } from "@/components/play/GuessScreen";
@@ -9,14 +12,42 @@ import { RevealScreen } from "@/components/play/RevealScreen";
 const STEPS = ["Interrogate", "Trade", "Reveal"];
 
 function stepIndex(phase: string): number {
-  if (phase === "interrogation") return 0;
+  if (phase === "briefing" || phase === "interrogation") return 0;
   if (phase === "trading") return 1;
   return 2;
 }
 
 export function Lab() {
   const g = useGame();
+  const [seedLoading, setSeedLoading] = useState(true);
   const active = stepIndex(g.phase);
+
+  // fetch the live Cosmos seed whenever we (re)enter briefing
+  useEffect(() => {
+    if (g.phase !== "briefing") return;
+    let live = true;
+    setSeedLoading(true);
+    fetchChainSeed().then((s) => {
+      if (!live) return;
+      g.applySeed(s);
+      setSeedLoading(false);
+    });
+    return () => {
+      live = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [g.phase]);
+
+  const title =
+    g.phase === "briefing"
+      ? "Enter the lab."
+      : g.phase === "interrogation"
+        ? "Interrogate the subject."
+        : g.phase === "trading"
+          ? "Trade the curve. Read the room."
+          : g.phase === "guess"
+            ? "Make your call."
+            : "The reveal.";
 
   return (
     <main className="relative overflow-hidden">
@@ -29,18 +60,22 @@ export function Lab() {
         {/* header + stepper */}
         <div className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <span className="badge">
-              <span className="dot animate-blink" />
-              <span className="eyebrow">Lab · live round</span>
-            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="badge">
+                <span className="dot animate-blink" />
+                <span className="eyebrow">Lab · live round</span>
+              </span>
+              {g.seed ? (
+                <span className="badge">
+                  <span className="h-2 w-2 rounded-full bg-brand" />
+                  <span className="font-mono text-[0.7rem] text-ink-muted">
+                    Cosmos Hub · block #{g.seed.height.toLocaleString()}
+                  </span>
+                </span>
+              ) : null}
+            </div>
             <h1 className="mt-4 font-display text-3xl font-semibold tracking-[-0.02em] text-ink sm:text-4xl">
-              {g.phase === "interrogation"
-                ? "Interrogate the subject."
-                : g.phase === "trading"
-                  ? "Trade the curve. Read the room."
-                  : g.phase === "guess"
-                    ? "Make your call."
-                    : "The reveal."}
+              {title}
             </h1>
           </div>
 
@@ -65,6 +100,10 @@ export function Lab() {
             ))}
           </ol>
         </div>
+
+        {g.phase === "briefing" ? (
+          <Briefing seed={g.seed} loading={seedLoading} onBegin={g.beginInterrogation} />
+        ) : null}
 
         {g.phase === "interrogation" ? (
           <InterrogationRoom

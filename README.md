@@ -6,9 +6,37 @@ A 60-second trading game where an AI has a hidden objective. The player gets thr
 
 ---
 
+## Demo
+
+- **Live:** _add your Vercel URL here_ — the game runs at `/play`.
+- Live LLM agent is enabled on the deployment (OpenRouter); rounds are seeded from live Cosmos Hub blocks.
+
+## How this maps to the hackathon judging
+
+| Signal | How Mind the Mind addresses it |
+| --- | --- |
+| **Working prototype** | A complete, playable game at `/play`: briefing → interrogation → 60s trading → guess → reveal. CI builds, typechecks, and lints on every push (see the badge / Actions tab). |
+| **Creative mechanic** | You interrogate an AI with a *hidden objective*, trade a bonding curve against it for 60s, then see its per-tick private reasoning next to what it told you. The mechanic *is* the gap between what it said and what it thought. |
+| **How AI is used** | A live LLM (via OpenRouter) role-plays the agent — it answers your interrogation in character, evasive in proportion to its hidden objective, and delivers a first-person debrief at the reveal. Graceful fallback to scripted agents when no key is set. |
+| **Cosmos relevance** | Every round is seeded from **live Cosmos Hub chain state** — read-only, no wallet/key/contract. The latest block height selects your subject and is shown on-screen with a "verify this block" link. |
+| **Incentive clarity** | An on-site Economics section spells out the loop (Stake → Interrogate → Trade → Reveal → Payout) and a payout that weights P&L *and* a correct mind-read. Worked example below. |
+
+### Incentive — worked example
+
+Buy-in: 100 credits into the round pot. You finish the 60s with a trading P&L of **+18%** and you **correctly call** the agent's hidden objective:
+
+```
+payout = stake × (1 + P&L) × mind-read multiplier
+       = 100   × 1.18      × 1.5                 = 177
+```
+
+A *wrong* read drops the multiplier to ~1.0 (you keep your P&L, earn no read bonus); a losing round with a wrong read forfeits to the pot. The only durable edge is reading the agent.
+
+---
+
 ## What's in this repo
 
-This is the public landing page. The `/play` route is a stub for now — the dashboard (interrogation room → 60s trading round → reveal) is shipping next.
+The marketing landing page **and** the full playable game at `/play` (briefing → interrogation → 60s trading → reveal).
 
 - **Stack:** Next.js 14.2 (App Router), React 18, TypeScript (strict), Tailwind 3.4
 - **Fonts:** JetBrains Mono (headings), Inter (body) — both via `next/font/google`
@@ -51,6 +79,17 @@ degrades gracefully: no key, a failure, or a timeout falls back to the scripted
 answer, so the game always works. Trading decisions stay deterministic (for
 latency and fairness) — the model drives the *language*, not the trades.
 
+## Cosmos integration
+
+Each round is anchored to **live Cosmos Hub chain state** — read-only, no wallet, no key, no contract:
+
+- On the briefing screen, the server route `GET /api/seed` reads the latest block from a public Cosmos REST/LCD endpoint (`src/lib/game/cosmos.ts`, default `https://rest.cosmos.directory/cosmoshub`, overridable via `COSMOS_LCD`).
+- The block **height deterministically selects your subject** (`height % agents`), so the same block always yields the same agent — verifiable.
+- The block is shown on-screen with a **"verify this block"** link straight to the chain, and a persistent `Cosmos Hub · block #…` stamp through the round.
+- If the endpoint is unreachable, it falls back to a local seed — the game never blocks.
+
+This is the lightweight, honest path to real Cosmos relevance. A heavier follow-up (a stake + settle contract on Cosmos EVM) is on the roadmap.
+
 ## Roadmap
 
 - [x] Landing page
@@ -58,8 +97,9 @@ latency and fairness) — the model drives the *language*, not the trades.
 - [x] `/play` — 60s tick engine on a constant-product bonding curve, you vs the agent
 - [x] `/play` — reveal screen (guess its objective, then see the per-tick reasoning trace)
 - [x] Live LLM-driven agent answers + reveal debrief via OpenRouter (optional, with fallback)
+- [x] Cosmos relevance — each round seeded from live Cosmos Hub block (read-only, verifiable)
 - [ ] Free-form interrogation questions (currently a fixed bank)
-- [ ] LLM-driven trade decisions (currently deterministic policies)
+- [ ] On-chain stake + settle contract on Cosmos EVM
 - [ ] Backend + persistence / leaderboards
 
 ## The game (`/play`)
