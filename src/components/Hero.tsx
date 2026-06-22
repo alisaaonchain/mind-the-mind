@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { InterrogationTicker } from "@/components/InterrogationTicker";
 import { Waveform } from "@/components/ui/Waveform";
-import { BondingCurve } from "@/components/ui/BondingCurve";
 import { Reveal } from "@/components/ui/Reveal";
 
 const STATS: { label: string; value: string; suffix?: string }[] = [
@@ -10,83 +9,82 @@ const STATS: { label: string; value: string; suffix?: string }[] = [
   { label: "Hidden goals", value: "10+" },
 ];
 
+const GOALS = [
+  "Accumulate quietly",
+  "Slow bleed",
+  "Pump then dump",
+  "Mirror the operator",
+  "Hold to the bell",
+  "Front-run every buy",
+  "Starve the curve",
+  "Exit at 62%",
+];
+
 export function Hero() {
   return (
-    <section className="relative overflow-hidden pt-12 pb-24 sm:pt-16 sm:pb-32">
-      {/* ambient bonding curve, low-opacity, top-right */}
-      <BondingCurve className="pointer-events-none absolute -right-10 -top-10 h-[420px] w-[640px] opacity-[0.18] hidden lg:block" />
+    <section className="relative overflow-hidden">
+      {/* ambient aurora */}
+      <div className="aurora" aria-hidden>
+        <div className="aurora-blob b1" />
+        <div className="aurora-blob b2" />
+        <div className="aurora-blob b3" />
+      </div>
 
-      <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-12">
-          <div className="lg:col-span-7">
+      <div className="relative mx-auto max-w-7xl px-5 pb-16 pt-14 sm:px-8 sm:pt-20">
+        <div className="grid items-center gap-12 lg:grid-cols-12">
+          <div className="lg:col-span-6">
             <Reveal>
-              <span className="kicker">
-                <span className="dot-blink" />
-                Lab Experiment 001 / Adversarial AI trading game / In testing
+              <span className="badge">
+                <span className="dot animate-blink" />
+                <span className="eyebrow">Lab Experiment 001</span>
+                <span className="text-ink-faint">·</span>
+                <span className="text-ink-muted">Adversarial AI trading game</span>
               </span>
             </Reveal>
 
             <Reveal delay={60}>
-              <h1 className="mt-6 font-mono text-[2.75rem] leading-[0.98] tracking-tight text-bone sm:text-6xl lg:text-[5rem]">
-                <span className="block">It&apos;s plotting</span>
-                <span
-                  className="glitch block text-acid crt"
-                  data-text="something."
-                >
+              <h1 className="mt-6 font-display text-[2.9rem] font-semibold leading-[1.02] tracking-[-0.03em] text-ink sm:text-6xl lg:text-[4.4rem]">
+                It&apos;s plotting
+                <br />
+                <span className="bg-gradient-to-r from-brand via-brand to-accent bg-clip-text text-transparent">
                   something.
                 </span>
               </h1>
             </Reveal>
 
-            {/* live brainwave under the headline */}
-            <div className="mt-6 max-w-md">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="label text-acid-dim">subject.cortex // live</span>
-                <span className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-bone-dim">
-                  signal nominal
-                </span>
-              </div>
-              <Waveform height={40} speed={5} />
-            </div>
-
             <Reveal delay={120}>
-              <p className="mt-7 max-w-xl text-base leading-relaxed text-bone-dim sm:text-lg">
-                A 60-second trading game where the AI has a hidden objective.
-                You get three questions before it acts. The AI must answer — but
-                it can be evasive. Then both of you trade a bonding curve. After,
-                its secret goal and per-tick reasoning are laid bare.{" "}
-                <span className="text-bone">Reading its mind is how you win.</span>
+              <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-muted">
+                A 60-second trading game where the AI has a hidden objective. You
+                get three questions before it acts — it must answer, but it can be
+                evasive. Then you both trade a bonding curve. After, its secret
+                goal and per-tick reasoning are laid bare.{" "}
+                <span className="font-medium text-ink">
+                  Reading its mind is how you win.
+                </span>
               </p>
             </Reveal>
 
             <Reveal delay={180}>
               <div className="mt-8 flex flex-wrap items-center gap-3">
-                <Link href="/play" className="btn-acid">
-                  <span className="dot-blink" />
+                <Link href="/play" className="btn-primary">
                   Enter the Lab
+                  <span aria-hidden>→</span>
                 </Link>
-                <a href="#sample" className="btn-ghost">
+                <a href="#sample" className="btn-secondary">
                   Watch a round replay
                 </a>
               </div>
             </Reveal>
 
             <Reveal delay={240}>
-              <dl className="mt-12 grid max-w-xl grid-cols-3 gap-3 sm:gap-5">
+              <dl className="mt-12 grid max-w-lg grid-cols-3 gap-4">
                 {STATS.map((s) => (
-                  <div
-                    key={s.label}
-                    className="bracketed relative border border-ink-line bg-ink-panel/60 p-4 sm:p-5"
-                  >
-                    <span className="br-tr" aria-hidden />
-                    <span className="br-bl" aria-hidden />
+                  <div key={s.label} className="card p-4 sm:p-5">
                     <dt className="label">{s.label}</dt>
-                    <dd className="mt-2 font-mono text-2xl text-acid crt sm:text-3xl">
+                    <dd className="mt-1.5 font-display text-3xl font-semibold tracking-tight text-ink">
                       {s.value}
                       {s.suffix ? (
-                        <span className="ml-0.5 text-base text-bone-dim">
-                          {s.suffix}
-                        </span>
+                        <span className="text-lg text-ink-faint">{s.suffix}</span>
                       ) : null}
                     </dd>
                   </div>
@@ -95,12 +93,42 @@ export function Hero() {
             </Reveal>
           </div>
 
-          <div className="lg:col-span-5">
-            <Reveal delay={120}>
+          <div className="lg:col-span-6">
+            <Reveal delay={140}>
               <InterrogationTicker />
             </Reveal>
           </div>
         </div>
+
+        {/* live brainwave + scrolling goals */}
+        <Reveal delay={120}>
+          <div className="mt-16">
+            <div className="mb-3 flex items-center justify-between">
+              <span className="label">Subject pool · hidden objectives</span>
+              <span className="flex items-center gap-2 text-xs text-ink-faint">
+                <span className="dot animate-blink" />
+                cortex signal nominal
+              </span>
+            </div>
+            <div className="mb-5 max-w-md">
+              <div className="text-brand">
+                <Waveform height={36} speed={5} tone="brand" />
+              </div>
+            </div>
+            <div className="marquee-mask">
+              <div className="marquee gap-3">
+                {[...GOALS, ...GOALS].map((g, i) => (
+                  <span
+                    key={i}
+                    className="whitespace-nowrap rounded-full border border-line bg-surface px-4 py-1.5 font-mono text-xs text-ink-muted"
+                  >
+                    {g}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

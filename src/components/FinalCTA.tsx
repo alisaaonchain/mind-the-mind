@@ -4,38 +4,44 @@ import { Reveal } from "@/components/ui/Reveal";
 
 export function FinalCTA() {
   return (
-    <section className="relative overflow-hidden border-t border-ink-line py-24 sm:py-32">
-      <div className="scan-beam" aria-hidden />
-      <div className="mx-auto max-w-5xl px-5 sm:px-8 text-center">
+    <section className="relative overflow-hidden border-t border-line py-24 sm:py-32">
+      <div className="aurora opacity-70" aria-hidden>
+        <div className="aurora-blob b1" />
+        <div className="aurora-blob b2" />
+      </div>
+
+      <div className="relative mx-auto max-w-4xl px-5 text-center sm:px-8">
         <Reveal>
-          <div className="kicker mx-auto">
-            <span className="dot-blink" />
-            Lab Experiment 001 — open
-          </div>
-          <h2 className="mt-6 font-mono text-4xl tracking-tight text-bone sm:text-6xl">
+          <span className="badge mx-auto">
+            <span className="dot animate-blink" />
+            <span className="eyebrow">Lab Experiment 001 — open</span>
+          </span>
+          <h2 className="mt-6 font-display text-4xl font-semibold tracking-[-0.03em] text-ink sm:text-6xl">
             Step into the lab.
             <br />
-            <span className="text-acid crt">Read its mind.</span>
+            <span className="bg-gradient-to-r from-brand to-accent bg-clip-text text-transparent">
+              Read its mind.
+            </span>
           </h2>
-          <p className="mx-auto mt-6 max-w-xl leading-relaxed text-bone-dim">
+          <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-ink-muted">
             The first cohort of agents is loaded. Three questions, sixty seconds,
             one secret. See if you can spot the plot before the curve does.
           </p>
         </Reveal>
 
         <Reveal delay={120}>
-          <div className="mx-auto mt-8 max-w-sm">
-            <Waveform height={36} speed={4} />
+          <div className="mx-auto mt-8 max-w-sm text-brand">
+            <Waveform height={34} speed={4} tone="brand" />
           </div>
         </Reveal>
 
         <Reveal delay={160}>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Link href="/play" className="btn-acid">
-              <span className="dot-blink" />
+            <Link href="/play" className="btn-primary">
               Enter the Lab
+              <span aria-hidden>→</span>
             </Link>
-            <a href="#sample" className="btn-ghost">
+            <a href="#sample" className="btn-secondary">
               Watch a round replay
             </a>
           </div>

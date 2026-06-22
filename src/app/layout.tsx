@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
+  display: "swap",
+});
+
+const display = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-display",
   display: "swap",
 });
 
@@ -39,8 +45,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrains.variable}`}>
-      <body className="lab-bg scanlines grain font-sans antialiased min-h-screen">
+    <html
+      lang="en"
+      className={`${inter.variable} ${display.variable} ${jetbrains.variable}`}
+    >
+      <body className="min-h-screen bg-surface font-sans text-ink antialiased">
         {children}
       </body>
     </html>

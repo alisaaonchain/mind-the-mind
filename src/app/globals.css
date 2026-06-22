@@ -3,240 +3,211 @@
 @tailwind utilities;
 
 :root {
-  --bg: #0a1014;
-  --bg-deep: #070b0e;
-  --acid: #9fff6b;
-  --acid-dim: #6fcc44;
-  --amber: #ffb347;
-  --bone: #d9e2dc;
-  --line: #1b2a33;
+  --surface: #ffffff;
+  --surface-soft: #f7f8fa;
+  --ink: #0b0d12;
+  --ink-muted: #5b6472;
+  --ink-faint: #8a93a3;
+  --line: #e8eaf0;
+  --brand: #4f46e5;
+  --brand-soft: #eef0ff;
+  --accent: #ff6a3d;
+  --accent-soft: #fff1eb;
 }
 
-html,
-body {
-  background-color: var(--bg);
-  color: var(--bone);
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  font-feature-settings: "ss01", "cv11";
+  background-color: var(--surface);
+  color: var(--ink);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: rgba(159, 255, 107, 0.25);
-  color: #eaffe0;
+  background: rgba(79, 70, 229, 0.16);
+  color: #1b1746;
 }
 
-.lab-bg {
-  background:
-    radial-gradient(1100px 700px at 80% -10%, rgba(159, 255, 107, 0.06), transparent 60%),
-    radial-gradient(900px 600px at -10% 20%, rgba(255, 179, 71, 0.04), transparent 60%),
-    linear-gradient(180deg, #0a1014 0%, #070b0e 100%);
-}
-
-.scanlines::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0) 0px,
-    rgba(255, 255, 255, 0) 2px,
-    rgba(255, 255, 255, 0.025) 3px,
-    rgba(255, 255, 255, 0) 4px
-  );
-  z-index: 60;
-  mix-blend-mode: overlay;
-}
-
-.grain::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.06;
-  z-index: 55;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-}
-
-.scan-beam {
+/* ============================================================
+   Ambient aurora background (soft drifting colour blobs)
+   ============================================================ */
+.aurora {
   position: absolute;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
 }
-.scan-beam::after {
-  content: "";
+.aurora-blob {
   position: absolute;
-  left: 0;
-  right: 0;
-  height: 22%;
-  background: linear-gradient(
-    180deg,
-    rgba(159, 255, 107, 0) 0%,
-    rgba(159, 255, 107, 0.06) 50%,
-    rgba(159, 255, 107, 0) 100%
-  );
-  animation: scan 7s linear infinite;
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: 0.5;
+  will-change: transform;
+}
+.aurora-blob.b1 {
+  width: 540px;
+  height: 540px;
+  top: -180px;
+  right: -120px;
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.35), transparent 70%);
+  animation: aurora1 18s ease-in-out infinite;
+}
+.aurora-blob.b2 {
+  width: 460px;
+  height: 460px;
+  top: 40px;
+  left: -160px;
+  background: radial-gradient(circle, rgba(255, 106, 61, 0.28), transparent 70%);
+  animation: aurora2 22s ease-in-out infinite;
+}
+.aurora-blob.b3 {
+  width: 380px;
+  height: 380px;
+  bottom: -160px;
+  left: 35%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.22), transparent 70%);
+  animation: aurora1 26s ease-in-out infinite;
 }
 
-.crt {
-  text-shadow:
-    0 0 1px rgba(159, 255, 107, 0.85),
-    0 0 6px rgba(159, 255, 107, 0.45),
-    0 0 18px rgba(159, 255, 107, 0.25);
-}
-.crt-amber {
-  text-shadow:
-    0 0 1px rgba(255, 179, 71, 0.85),
-    0 0 6px rgba(255, 179, 71, 0.45);
+/* faint dotted grid overlay */
+.dotgrid {
+  background-image: radial-gradient(rgba(11, 13, 18, 0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
 }
 
-.bracketed {
-  position: relative;
-}
-.bracketed::before,
-.bracketed::after,
-.bracketed > .br-tr,
-.bracketed > .br-bl {
-  content: "";
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  border-color: var(--acid);
-  border-style: solid;
-}
-.bracketed::before {
-  top: -1px;
-  left: -1px;
-  border-width: 1px 0 0 1px;
-}
-.bracketed::after {
-  bottom: -1px;
-  right: -1px;
-  border-width: 0 1px 1px 0;
-}
-.bracketed > .br-tr {
-  top: -1px;
-  right: -1px;
-  border-width: 1px 1px 0 0;
-}
-.bracketed > .br-bl {
-  bottom: -1px;
-  left: -1px;
-  border-width: 0 0 1px 1px;
-}
-
-.dot-blink {
-  display: inline-block;
-  width: 9px;
-  height: 9px;
-  border-radius: 999px;
-  background: var(--acid);
-  box-shadow: 0 0 8px rgba(159, 255, 107, 0.9);
-}
-
-.hairline {
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(159, 255, 107, 0.35) 50%,
-    transparent 100%
-  );
-}
-
-.btn-acid {
+/* ============================================================
+   Buttons
+   ============================================================ */
+.btn-primary {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.7rem 1.05rem;
-  background: rgba(159, 255, 107, 0.08);
-  border: 1px solid rgba(159, 255, 107, 0.55);
-  color: var(--acid);
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+  gap: 0.5rem;
+  padding: 0.72rem 1.2rem;
+  border-radius: 0.7rem;
+  background: var(--brand);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.1);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
 }
-.btn-acid:hover {
-  background: rgba(159, 255, 107, 0.14);
-  box-shadow: 0 0 18px rgba(159, 255, 107, 0.35);
+.btn-primary:hover {
+  background: var(--brand);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 34px -12px rgba(79, 70, 229, 0.55);
 }
-.btn-acid:active {
-  transform: translateY(1px);
-}
-
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.7rem 1.05rem;
-  border: 1px solid rgba(217, 226, 220, 0.18);
-  color: var(--bone);
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  transition: background 0.15s ease, border-color 0.15s ease;
-}
-.btn-ghost:hover {
-  border-color: rgba(217, 226, 220, 0.4);
-  background: rgba(217, 226, 220, 0.04);
+.btn-primary:active {
+  transform: translateY(0);
 }
 
-.kicker {
+.btn-secondary {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.3rem 0.65rem;
-  border: 1px solid rgba(159, 255, 107, 0.35);
-  background: rgba(159, 255, 107, 0.05);
-  color: var(--acid);
+  gap: 0.5rem;
+  padding: 0.72rem 1.2rem;
+  border-radius: 0.7rem;
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+.btn-secondary:hover {
+  transform: translateY(-1px);
+  border-color: var(--line);
+  box-shadow: 0 12px 28px -16px rgba(16, 24, 40, 0.3);
+}
+
+/* ============================================================
+   Pills, badges, labels
+   ============================================================ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.34rem 0.7rem 0.34rem 0.6rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.eyebrow {
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
+  color: var(--brand);
+  font-weight: 500;
 }
 
 .label {
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.18em;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--acid-dim);
+  color: var(--ink-faint);
 }
-
-.fade-swap {
-  animation: flicker 4.5s ease-in-out infinite;
-}
-
 
 /* ============================================================
-   v2 — motion + cinematic polish
+   Cards
    ============================================================ */
+.card {
+  border-radius: 1rem;
+  background: #fff;
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04),
+    0 10px 28px -14px rgba(16, 24, 40, 0.14);
+}
+.card-hover {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  border-color: var(--line);
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.06),
+    0 22px 48px -20px rgba(16, 24, 40, 0.22);
+}
 
-/* ------- brainwave / EEG trace ------- */
+/* blinking live dot */
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--brand);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14);
+}
+
+/* hairline divider */
+.hairline {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line), transparent);
+}
+
+/* ============================================================
+   Brainwave / EEG trace
+   ============================================================ */
 .waveform {
   width: 100%;
   overflow: hidden;
-  mask-image: linear-gradient(
-    90deg,
-    transparent 0%,
-    #000 8%,
-    #000 92%,
-    transparent 100%
-  );
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
 .waveform-svg {
   display: block;
   width: 200%;
   height: 100%;
-  filter: drop-shadow(0 0 4px rgba(159, 255, 107, 0.55));
   animation-name: eeg-scroll;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
@@ -250,12 +221,13 @@ body {
   }
 }
 
-/* ------- bonding-curve draw-in ------- */
+/* ============================================================
+   Bonding-curve draw-in
+   ============================================================ */
 .bc-line {
   stroke-dasharray: 620;
   stroke-dashoffset: 620;
-  animation: bc-draw 2.6s ease-out 0.2s forwards;
-  filter: drop-shadow(0 0 6px rgba(159, 255, 107, 0.4));
+  animation: bc-draw 2.4s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
 }
 @keyframes bc-draw {
   to {
@@ -263,12 +235,14 @@ body {
   }
 }
 
-/* ------- scroll reveal ------- */
+/* ============================================================
+   Scroll reveal
+   ============================================================ */
 .reveal {
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(18px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform;
 }
 .reveal-in {
@@ -276,66 +250,20 @@ body {
   transform: none;
 }
 
-/* ------- headline glitch ------- */
-.glitch {
-  position: relative;
-  display: inline-block;
-}
-.glitch::before,
-.glitch::after {
-  content: attr(data-text);
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  clip-path: inset(0);
-}
-.glitch::before {
-  color: var(--amber);
-  opacity: 0.7;
-  animation: glitch-a 4.2s steps(2, end) infinite;
-}
-.glitch::after {
-  color: #5fd0ff;
-  opacity: 0.55;
-  animation: glitch-b 3.3s steps(2, end) infinite;
-}
-@keyframes glitch-a {
-  0%, 92%, 100% {
-    transform: translate(0, 0);
-    clip-path: inset(0 0 0 0);
-  }
-  93% {
-    transform: translate(-2px, 1px);
-    clip-path: inset(12% 0 58% 0);
-  }
-  96% {
-    transform: translate(2px, -1px);
-    clip-path: inset(64% 0 8% 0);
-  }
-}
-@keyframes glitch-b {
-  0%, 90%, 100% {
-    transform: translate(0, 0);
-    clip-path: inset(0 0 0 0);
-  }
-  92% {
-    transform: translate(2px, -1px);
-    clip-path: inset(40% 0 30% 0);
-  }
-  95% {
-    transform: translate(-2px, 1px);
-    clip-path: inset(20% 0 50% 0);
-  }
-}
-
-/* ------- blinking caret for typewriter ------- */
+/* ============================================================
+   Typewriter caret + thinking dots
+   ============================================================ */
 .caret::after {
-  content: "▋";
-  margin-left: 1px;
-  color: var(--acid);
-  animation: caret-blink 1s steps(1) infinite;
+  content: "";
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.15em;
+  background: var(--brand);
+  animation: caretBlink 1s steps(1) infinite;
 }
-@keyframes caret-blink {
+@keyframes caretBlink {
   0%, 50% {
     opacity: 1;
   }
@@ -344,14 +272,13 @@ body {
   }
 }
 
-/* ------- thinking dots ------- */
 .thinking span {
   display: inline-block;
   width: 5px;
   height: 5px;
   margin-left: 3px;
-  border-radius: 999px;
-  background: var(--amber);
+  border-radius: 9999px;
+  background: var(--accent);
   opacity: 0.4;
   animation: think 1.1s ease-in-out infinite;
 }
@@ -372,27 +299,38 @@ body {
   }
 }
 
-/* ------- replay chart ------- */
-.playhead {
-  transition: opacity 0.2s ease;
+/* ============================================================
+   Marquee
+   ============================================================ */
+.marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 32s linear infinite;
 }
+.marquee-mask {
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+
+/* ============================================================
+   Replay chart helpers
+   ============================================================ */
 .tick-row {
   transition: background 0.25s ease, border-color 0.25s ease, opacity 0.25s ease;
 }
 .tick-active {
-  background: rgba(255, 179, 71, 0.07);
-  border-color: rgba(255, 179, 71, 0.45) !important;
+  background: var(--accent-soft);
+  border-color: rgba(255, 106, 61, 0.4) !important;
 }
 .tick-idle {
-  opacity: 0.4;
+  opacity: 0.45;
 }
 
-/* range input — lab scrubber */
 input[type="range"].scrub {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 3px;
+  height: 4px;
+  border-radius: 9999px;
   background: var(--line);
   outline: none;
   cursor: pointer;
@@ -400,53 +338,54 @@ input[type="range"].scrub {
 input[type="range"].scrub::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  background: var(--acid);
-  box-shadow: 0 0 10px rgba(159, 255, 107, 0.8);
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: var(--brand);
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(16, 24, 40, 0.25);
 }
 input[type="range"].scrub::-moz-range-thumb {
-  width: 12px;
-  height: 12px;
-  border: none;
-  border-radius: 999px;
-  background: var(--acid);
-  box-shadow: 0 0 10px rgba(159, 255, 107, 0.8);
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: var(--brand);
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(16, 24, 40, 0.25);
 }
 
-/* ------- pill button (small ghost control) ------- */
 .ctrl {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  height: 32px;
-  padding: 0 0.7rem;
-  border: 1px solid rgba(159, 255, 107, 0.4);
-  color: var(--acid);
-  background: rgba(159, 255, 107, 0.06);
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.68rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  transition: background 0.15s ease, box-shadow 0.15s ease;
+  height: 34px;
+  padding: 0 0.85rem;
+  border-radius: 0.55rem;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 600;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 .ctrl:hover {
-  background: rgba(159, 255, 107, 0.13);
-  box-shadow: 0 0 12px rgba(159, 255, 107, 0.3);
+  background: var(--surface-soft);
 }
 
-/* ------- reduced motion ------- */
+/* ============================================================
+   Reduced motion
+   ============================================================ */
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   .waveform-svg,
   .bc-line,
-  .glitch::before,
-  .glitch::after,
   .caret::after,
   .thinking span,
-  .scan-beam::after,
-  .fade-swap {
+  .aurora-blob,
+  .marquee {
     animation: none !important;
   }
   .reveal {

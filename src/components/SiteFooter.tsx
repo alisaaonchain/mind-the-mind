@@ -3,44 +3,44 @@ import { Waveform } from "@/components/ui/Waveform";
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-ink-line bg-ink-deep/60">
-      <div className="opacity-30">
-        <Waveform height={28} speed={8} calm />
+    <footer className="border-t border-line bg-surface-soft">
+      <div className="opacity-50">
+        <Waveform height={26} speed={9} tone="brand" calm />
       </div>
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 py-12">
-        <div className="grid md:grid-cols-3 gap-8">
+      <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8">
+        <div className="grid gap-10 md:grid-cols-3">
           <div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <BlinkingDot />
-              <span className="font-mono text-sm tracking-[0.22em] uppercase text-bone">
-                Mind<span className="text-acid-dim">/</span>the
-                <span className="text-acid-dim">/</span>Mind
+              <span className="font-display text-lg font-semibold tracking-tight text-ink">
+                Mind the Mind
               </span>
             </div>
-            <p className="mt-4 text-bone-dim text-sm leading-relaxed max-w-xs">
-              A 60-second adversarial trading game. Three questions, one
-              hidden objective, full reasoning reveal at the end.
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-ink-muted">
+              A 60-second adversarial trading game. Three questions, one hidden
+              objective, full reasoning reveal at the end.
             </p>
           </div>
 
           <div>
-            <div className="label mb-3">The experiment</div>
-            <ul className="space-y-2 text-sm">
-              <li className="text-bone-dim">Lab Experiment 001</li>
-              <li className="text-bone-dim">Adversarial AI trading game</li>
-              <li className="text-bone-dim">
-                Status: <span className="text-acid">in testing</span>
+            <div className="label mb-4">The experiment</div>
+            <ul className="space-y-2.5 text-sm text-ink-muted">
+              <li>Lab Experiment 001</li>
+              <li>Adversarial AI trading game</li>
+              <li>
+                Status:{" "}
+                <span className="font-medium text-brand">in testing</span>
               </li>
             </ul>
           </div>
 
           <div>
-            <div className="label mb-3">Lab</div>
-            <ul className="space-y-2 text-sm">
+            <div className="label mb-4">Lab</div>
+            <ul className="space-y-2.5 text-sm">
               <li>
                 <a
                   href="/play"
-                  className="text-bone hover:text-acid transition-colors"
+                  className="text-ink-muted transition-colors hover:text-ink"
                 >
                   /play — interrogation room
                 </a>
@@ -50,26 +50,25 @@ export function SiteFooter() {
                   href="https://github.com/alisaaonchain/mind-the-mind"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-bone hover:text-acid transition-colors"
+                  className="text-ink-muted transition-colors hover:text-ink"
                 >
                   Source on GitHub ↗
                 </a>
               </li>
-              <li className="text-bone-dim">
-                Status: <span className="text-acid">recruiting subjects</span>
+              <li className="text-ink-muted">
+                Status:{" "}
+                <span className="font-medium text-brand">recruiting subjects</span>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="hairline mt-12 mb-6" aria-hidden />
+        <div className="hairline my-10" aria-hidden />
 
-        <div className="flex flex-col sm:flex-row justify-between gap-3 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-bone-dim">
-          <span>
-            © {new Date().getFullYear()} Mind the Mind — Lab Experiment 001
-          </span>
+        <div className="flex flex-col justify-between gap-3 text-xs text-ink-faint sm:flex-row">
+          <span>© {new Date().getFullYear()} Mind the Mind — Lab Experiment 001</span>
           <span className="flex items-center gap-2">
-            <span className="dot-blink" />
+            <span className="dot" />
             All subjects observed. All transcripts retained.
           </span>
         </div>

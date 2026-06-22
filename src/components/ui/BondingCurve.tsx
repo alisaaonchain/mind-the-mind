@@ -19,12 +19,11 @@ export function BondingCurve({ className = "", animate = true }: Props) {
     >
       <defs>
         <linearGradient id="bc-fill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="rgba(159,255,107,0.10)" />
-          <stop offset="100%" stopColor="rgba(159,255,107,0)" />
+          <stop offset="0%" stopColor="rgba(79,70,229,0.12)" />
+          <stop offset="100%" stopColor="rgba(79,70,229,0)" />
         </linearGradient>
       </defs>
 
-      {/* faint grid */}
       {[60, 120, 180, 240].map((y) => (
         <line
           key={`h-${y}`}
@@ -32,7 +31,7 @@ export function BondingCurve({ className = "", animate = true }: Props) {
           y1={y}
           x2="400"
           y2={y}
-          stroke="rgba(159,255,107,0.06)"
+          stroke="rgba(11,13,18,0.05)"
           strokeWidth="1"
         />
       ))}
@@ -43,23 +42,21 @@ export function BondingCurve({ className = "", animate = true }: Props) {
           y1="0"
           x2={x}
           y2="300"
-          stroke="rgba(159,255,107,0.06)"
+          stroke="rgba(11,13,18,0.05)"
           strokeWidth="1"
         />
       ))}
 
-      {/* area under curve */}
       <path
         d="M10 280 C120 270 230 200 300 110 C330 70 360 40 390 24 L390 300 L10 300 Z"
         fill="url(#bc-fill)"
       />
 
-      {/* the curve */}
       <path
         className={animate ? "bc-line" : ""}
         d="M10 280 C120 270 230 200 300 110 C330 70 360 40 390 24"
-        stroke="var(--acid)"
-        strokeWidth="2"
+        stroke="var(--brand)"
+        strokeWidth="2.5"
         strokeLinecap="round"
       />
     </svg>

@@ -27,20 +27,17 @@ const NOTES: Note[] = [
 
 export function WhyNow() {
   return (
-    <section id="why" className="relative border-t border-ink-line py-20 sm:py-28">
+    <section id="why" className="relative border-t border-line bg-surface-soft py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <Reveal>
           <div className="mb-14 grid gap-10 lg:grid-cols-12">
             <div className="lg:col-span-5">
-              <div className="kicker">
-                <span className="dot-blink" />
-                Thesis
-              </div>
-              <h2 className="mt-4 font-mono text-3xl tracking-tight text-bone sm:text-4xl">
+              <span className="eyebrow">Thesis</span>
+              <h2 className="mt-3 font-display text-3xl font-semibold tracking-[-0.02em] text-ink sm:text-[2.6rem]">
                 Why this experiment, why now.
               </h2>
             </div>
-            <p className="text-[1.02rem] leading-relaxed text-bone-dim lg:col-span-7">
+            <p className="text-lg leading-relaxed text-ink-muted lg:col-span-7">
               Every week there&apos;s a new agent that talks great and acts weird.
               Mind the Mind makes that gap legible: a tiny adversarial game that
               forces the agent to act, then hands you the receipts.
@@ -51,19 +48,17 @@ export function WhyNow() {
         <div className="grid gap-5 sm:grid-cols-2">
           {NOTES.map((n, i) => (
             <Reveal key={n.n} delay={i * 80}>
-              <div className="bracketed relative h-full border border-ink-line bg-ink-panel/50 p-6">
-                <span className="br-tr" aria-hidden />
-                <span className="br-bl" aria-hidden />
-                <div className="mb-3 flex items-baseline gap-3">
-                  <span className="font-mono text-sm tracking-[0.22em] text-acid crt">
+              <div className="card card-hover h-full p-7">
+                <div className="mb-4 flex items-center gap-3">
+                  <span className="font-mono text-sm font-semibold tracking-[0.1em] text-brand">
                     {n.n}
                   </span>
                   <span className="hairline flex-1" aria-hidden />
                 </div>
-                <h3 className="font-mono text-xl leading-snug text-bone">{n.title}</h3>
-                <p className="mt-3 text-[0.95rem] leading-relaxed text-bone-dim">
-                  {n.body}
-                </p>
+                <h3 className="font-display text-xl font-semibold leading-snug tracking-tight text-ink">
+                  {n.title}
+                </h3>
+                <p className="mt-3 leading-relaxed text-ink-muted">{n.body}</p>
               </div>
             </Reveal>
           ))}

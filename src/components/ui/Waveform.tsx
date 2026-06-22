@@ -1,8 +1,8 @@
 type Props = {
   className?: string;
   height?: number;
-  /** "acid" | "amber" — colour of the trace */
-  tone?: "acid" | "amber";
+  /** "brand" | "accent" — colour of the trace */
+  tone?: "brand" | "accent";
   /** seconds per loop; lower = faster */
   speed?: number;
   /** render a calmer, lower-amplitude idle line */
@@ -19,7 +19,6 @@ const CALM_TILE = [
 ];
 
 function buildPath(values: number[]): string {
-  // two tiles back-to-back => width 240, seamless when scrolled -50%
   const pts: string[] = [];
   for (let tile = 0; tile < 2; tile++) {
     for (let i = 0; i < values.length; i++) {
@@ -35,19 +34,15 @@ function buildPath(values: number[]): string {
 export function Waveform({
   className = "",
   height = 44,
-  tone = "acid",
+  tone = "brand",
   speed = 6,
   calm = false,
 }: Props) {
-  const stroke = tone === "amber" ? "var(--amber)" : "var(--acid)";
+  const stroke = tone === "accent" ? "var(--accent)" : "var(--brand)";
   const d = buildPath(calm ? CALM_TILE : TILE);
 
   return (
-    <div
-      className={`waveform ${className}`}
-      style={{ height }}
-      aria-hidden="true"
-    >
+    <div className={`waveform ${className}`} style={{ height }} aria-hidden="true">
       <svg
         className="waveform-svg"
         viewBox="0 0 240 48"
@@ -58,7 +53,7 @@ export function Waveform({
           d={d}
           fill="none"
           stroke={stroke}
-          strokeWidth={1.5}
+          strokeWidth={1.75}
           strokeLinejoin="round"
           strokeLinecap="round"
           vectorEffect="non-scaling-stroke"

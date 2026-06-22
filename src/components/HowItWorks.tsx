@@ -46,20 +46,17 @@ const STEPS: Step[] = [
 
 export function HowItWorks() {
   return (
-    <section id="how" className="relative border-t border-ink-line py-20 sm:py-28">
+    <section id="how" className="relative border-t border-line py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <Reveal>
           <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <div className="kicker">
-                <span className="dot-blink" />
-                Protocol
-              </div>
-              <h2 className="mt-4 font-mono text-3xl tracking-tight text-bone sm:text-4xl">
+              <span className="eyebrow">Protocol</span>
+              <h2 className="mt-3 font-display text-3xl font-semibold tracking-[-0.02em] text-ink sm:text-[2.6rem]">
                 How a round works
               </h2>
             </div>
-            <p className="max-w-md text-bone-dim">
+            <p className="max-w-md text-ink-muted">
               Three phases, ninety seconds total. Most of that is the trade. Most
               of the game is the questions.
             </p>
@@ -69,26 +66,26 @@ export function HowItWorks() {
         <div className="grid gap-5 md:grid-cols-3 lg:gap-6">
           {STEPS.map((s, i) => (
             <Reveal key={s.step} delay={i * 90}>
-              <div className="bracketed group relative h-full border border-ink-line bg-ink-panel/60 p-6">
-                <span className="br-tr" aria-hidden />
-                <span className="br-bl" aria-hidden />
-                <div className="flex items-baseline justify-between">
-                  <span className="font-mono text-lg tracking-[0.2em] text-acid crt">
+              <div className="card card-hover h-full p-6">
+                <div className="flex items-center justify-between">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft font-display text-sm font-semibold text-brand">
                     {s.step}
                   </span>
-                  <span className="label text-bone-dim">{s.duration}</span>
+                  <span className="label">{s.duration}</span>
                 </div>
-                <h3 className="mt-3 font-mono text-2xl text-bone">{s.title}</h3>
-                <p className="mt-3 text-[0.95rem] leading-relaxed text-bone-dim">
+                <h3 className="mt-4 font-display text-xl font-semibold tracking-tight text-ink">
+                  {s.title}
+                </h3>
+                <p className="mt-2.5 text-[0.95rem] leading-relaxed text-ink-muted">
                   {s.body}
                 </p>
-                <ul className="mt-5 space-y-2">
+                <ul className="mt-5 space-y-2.5 border-t border-line pt-5">
                   {s.bullets.map((b) => (
                     <li
                       key={b}
-                      className="flex gap-2 font-mono text-[0.78rem] leading-relaxed text-bone"
+                      className="flex gap-2.5 text-sm leading-snug text-ink-soft"
                     >
-                      <span className="shrink-0 text-acid-dim">›</span>
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
                       <span>{b}</span>
                     </li>
                   ))}

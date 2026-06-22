@@ -3,42 +3,42 @@ import { BlinkingDot } from "@/components/ui/BlinkingDot";
 
 export function SiteNav() {
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-md bg-ink/70 border-b border-ink-line">
+    <header className="sticky top-0 z-50 border-b border-line/80 bg-surface/80 backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <div className="flex items-center justify-between h-14">
-          <Link href="/" className="flex items-center gap-3 group">
+        <div className="flex h-16 items-center justify-between">
+          <Link href="/" className="group flex items-center gap-2.5">
             <BlinkingDot />
-            <span className="font-mono text-sm tracking-[0.22em] uppercase text-bone group-hover:text-acid transition-colors">
-              Mind<span className="text-acid-dim">/</span>the<span className="text-acid-dim">/</span>Mind
+            <span className="font-display text-[1.05rem] font-semibold tracking-tight text-ink">
+              Mind the Mind
             </span>
-            <span className="hidden md:inline-block font-mono text-[0.65rem] tracking-[0.2em] uppercase text-bone-dim border border-ink-line px-1.5 py-0.5">
-              Lab&nbsp;001
+            <span className="ml-1 hidden rounded-full border border-line px-2 py-0.5 font-mono text-[0.6rem] uppercase tracking-[0.16em] text-ink-faint md:inline-block">
+              Lab 001
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-7 font-mono text-[0.75rem] uppercase tracking-[0.18em] text-bone-dim">
-            <a href="#how" className="hover:text-bone transition-colors">
+          <nav className="hidden items-center gap-8 text-sm font-medium text-ink-muted md:flex">
+            <a href="#how" className="transition-colors hover:text-ink">
               How it works
             </a>
-            <a href="#sample" className="hover:text-bone transition-colors">
+            <a href="#sample" className="transition-colors hover:text-ink">
               Sample round
             </a>
-            <a href="#why" className="hover:text-bone transition-colors">
+            <a href="#why" className="transition-colors hover:text-ink">
               Why now
             </a>
             <a
               href="https://github.com/alisaaonchain/mind-the-mind"
               target="_blank"
               rel="noreferrer"
-              className="hover:text-bone transition-colors"
+              className="transition-colors hover:text-ink"
             >
               Source ↗
             </a>
           </nav>
 
-          <Link href="/play" className="btn-acid">
-            <span className="dot-blink" />
+          <Link href="/play" className="btn-primary">
             Enter the Lab
+            <span aria-hidden>→</span>
           </Link>
         </div>
       </div>

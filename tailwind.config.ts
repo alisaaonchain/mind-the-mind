@@ -5,58 +5,95 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // light, clean SaaS palette
+        surface: {
+          DEFAULT: "#FFFFFF",
+          soft: "#F7F8FA",
+          muted: "#F1F3F7",
+          sunken: "#E9EDF3",
+        },
         ink: {
-          DEFAULT: "#0A1014",
-          deep: "#070B0E",
-          panel: "#0E161B",
-          panel2: "#111B21",
-          line: "#1B2A33",
+          DEFAULT: "#0B0D12", // headings / near-black
+          soft: "#272D3A",
+          muted: "#5B6472", // body
+          faint: "#8A93A3", // captions
         },
-        acid: {
-          DEFAULT: "#9FFF6B",
-          dim: "#6FCC44",
-          deep: "#3F8A22",
+        line: {
+          DEFAULT: "#E8EAF0",
+          strong: "#D8DCE6",
         },
-        amber: {
-          warn: "#FFB347",
-          deep: "#C8841F",
+        // primary brand — indigo/blue (the "visible" / calm channel)
+        brand: {
+          DEFAULT: "#4F46E5",
+          hover: "#4338CA",
+          soft: "#EEF0FF",
+          ring: "#C7CCFF",
+          ink: "#312BA6",
         },
-        bone: {
-          DEFAULT: "#D9E2DC",
-          dim: "#8A9A92",
+        // warm accent — coral (the "hidden mind" / what it was thinking)
+        accent: {
+          DEFAULT: "#FF6A3D",
+          hover: "#EC5326",
+          soft: "#FFF1EB",
+          ink: "#B83A18",
         },
       },
       fontFamily: {
-        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
+        display: ["var(--font-display)", "ui-sans-serif", "system-ui", "sans-serif"],
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       boxShadow: {
-        glow: "0 0 18px rgba(159,255,107,0.35), 0 0 6px rgba(159,255,107,0.5)",
-        glowAmber: "0 0 14px rgba(255,179,71,0.35)",
+        card: "0 1px 2px rgba(16,24,40,0.04), 0 10px 28px -14px rgba(16,24,40,0.14)",
+        cardHover:
+          "0 2px 6px rgba(16,24,40,0.06), 0 22px 48px -20px rgba(16,24,40,0.22)",
+        btn: "0 1px 2px rgba(16,24,40,0.10)",
+        glowBrand: "0 14px 34px -12px rgba(79,70,229,0.45)",
+        glowAccent: "0 14px 34px -12px rgba(255,106,61,0.40)",
+      },
+      borderRadius: {
+        xl2: "1.25rem",
       },
       keyframes: {
         blink: {
-          "0%, 60%": { opacity: "1" },
-          "61%, 100%": { opacity: "0.15" },
+          "0%, 64%": { opacity: "1" },
+          "65%, 100%": { opacity: "0.2" },
         },
-        scan: {
-          "0%": { transform: "translateY(-100%)" },
-          "100%": { transform: "translateY(100%)" },
+        floaty: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
         },
-        flicker: {
-          "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0.92" },
+        aurora1: {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "50%": { transform: "translate(40px, -30px) scale(1.15)" },
         },
-        ticker: {
-          "0%": { transform: "translateX(0)" },
-          "100%": { transform: "translateX(-50%)" },
+        aurora2: {
+          "0%, 100%": { transform: "translate(0, 0) scale(1.05)" },
+          "50%": { transform: "translate(-50px, 20px) scale(0.92)" },
+        },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
+        caretBlink: {
+          "0%, 50%": { opacity: "1" },
+          "51%, 100%": { opacity: "0" },
+        },
+        think: {
+          "0%, 100%": { opacity: "0.3", transform: "translateY(0)" },
+          "50%": { opacity: "1", transform: "translateY(-3px)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
         },
       },
       animation: {
-        blink: "blink 1.2s steps(1) infinite",
-        scan: "scan 7s linear infinite",
-        flicker: "flicker 4.5s ease-in-out infinite",
-        ticker: "ticker 40s linear infinite",
+        blink: "blink 1.3s steps(1) infinite",
+        floaty: "floaty 7s ease-in-out infinite",
+        aurora1: "aurora1 18s ease-in-out infinite",
+        aurora2: "aurora2 22s ease-in-out infinite",
+        marquee: "marquee 32s linear infinite",
       },
     },
   },

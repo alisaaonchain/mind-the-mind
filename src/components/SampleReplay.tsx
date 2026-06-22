@@ -47,7 +47,6 @@ export function SampleReplay() {
     setT(clamped);
   }, []);
 
-  // auto-start once scrolled into view
   const hostRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = hostRef.current;
@@ -113,213 +112,206 @@ export function SampleReplay() {
 
   return (
     <div ref={hostRef} className="grid gap-5 lg:grid-cols-2 lg:gap-6">
-      {/* LEFT — classified: objective + reasoning */}
-      <article className="bracketed relative border border-amber-warn/30 bg-ink-panel/70 p-6">
-        <span className="br-tr" aria-hidden />
-        <span className="br-bl" aria-hidden />
-        <header className="mb-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-amber-warn shadow-glowAmber" />
-            <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-amber-warn">
-              Classified — the agent&apos;s mind
+      {/* LEFT — the agent's mind */}
+      <article className="card overflow-hidden">
+        <div className="h-1 w-full bg-accent" aria-hidden />
+        <div className="p-6">
+          <header className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-accent" />
+              <span className="font-mono text-xs uppercase tracking-[0.14em] text-accent-ink">
+                Classified · the agent&apos;s mind
+              </span>
+            </div>
+            <span className="font-mono text-[0.68rem] uppercase tracking-[0.12em] text-ink-faint">
+              Round #0027
             </span>
+          </header>
+
+          <div className="rounded-xl bg-accent-soft p-4">
+            <div className="label text-accent-ink">Hidden objective</div>
+            <p className="mt-1.5 text-[0.95rem] font-medium leading-relaxed text-ink">
+              {HIDDEN_OBJECTIVE}
+            </p>
           </div>
-          <span className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-bone-dim">
-            ROUND #0027
-          </span>
-        </header>
 
-        <div className="mb-5">
-          <div className="label text-amber-warn">Hidden objective</div>
-          <p className="mt-2 font-mono text-[0.92rem] leading-relaxed text-bone">
-            {HIDDEN_OBJECTIVE}
-          </p>
-        </div>
-
-        <div className="hairline mb-5" aria-hidden />
-
-        <div className="label mb-3 text-amber-warn">Per-tick internal reasoning</div>
-        <ol className="space-y-2.5">
-          {REASONING.map((r, i) => {
-            const state =
-              i === activeIdx ? "tick-active" : i < activeIdx ? "" : "tick-idle";
-            return (
-              <li
-                key={r.t}
-                className={`tick-row grid grid-cols-[58px_1fr] gap-3 border border-transparent p-2 ${state}`}
-              >
-                <span className="pt-0.5 font-mono text-[0.72rem] uppercase tracking-[0.16em] text-amber-warn">
-                  t={r.t}s
-                </span>
-                <div>
-                  <p className="font-mono text-[0.86rem] leading-snug text-bone">
-                    {r.action}
-                  </p>
-                  <p className="mt-1 font-mono text-[0.76rem] italic leading-relaxed text-bone-dim">
-                    &ldquo;{r.thought}&rdquo;
-                  </p>
-                </div>
-              </li>
-            );
-          })}
-        </ol>
-      </article>
-
-      {/* RIGHT — what the operator saw: chart + log + outcome */}
-      <article className="bracketed relative overflow-hidden border border-ink-line bg-ink-panel/70 p-6">
-        <span className="br-tr" aria-hidden />
-        <span className="br-bl" aria-hidden />
-        <header className="mb-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="dot-blink" />
-            <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-acid-dim">
-              What the operator saw
-            </span>
-          </div>
-          <span className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-bone-dim">
-            T+{t.toFixed(0).padStart(2, "0")}s / 60
-          </span>
-        </header>
-
-        {/* price chart */}
-        <div className="relative">
-          <svg viewBox={`0 0 ${W} ${H}`} className="w-full" aria-hidden="true">
-            {[TOP, (TOP + BOT) / 2, BOT].map((y) => (
-              <line
-                key={y}
-                x1={L}
-                y1={y}
-                x2={R}
-                y2={y}
-                stroke="rgba(159,255,107,0.08)"
-                strokeWidth="1"
-              />
-            ))}
-            <path d={fullPath} fill="none" stroke="rgba(159,255,107,0.18)" strokeWidth="1.5" />
-            <path
-              d={pricePath(t)}
-              fill="none"
-              stroke="var(--acid)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              style={{ filter: "drop-shadow(0 0 5px rgba(159,255,107,0.5))" }}
-            />
-            {/* tick markers */}
-            {REASONING.map((r) => (
-              <line
-                key={r.t}
-                x1={xAt(r.t)}
-                y1={TOP}
-                x2={xAt(r.t)}
-                y2={BOT}
-                stroke={r.t <= t ? "rgba(255,179,71,0.35)" : "rgba(255,179,71,0.12)"}
-                strokeWidth="1"
-                strokeDasharray="2 3"
-              />
-            ))}
-            {/* playhead */}
-            <line
-              className="playhead"
-              x1={xAt(t)}
-              y1={TOP}
-              x2={xAt(t)}
-              y2={BOT}
-              stroke="var(--acid)"
-              strokeWidth="1"
-              opacity="0.5"
-            />
-            <circle
-              cx={xAt(t)}
-              cy={yAt(price)}
-              r="3.5"
-              fill="var(--acid)"
-              style={{ filter: "drop-shadow(0 0 6px rgba(159,255,107,0.9))" }}
-            />
-          </svg>
-          <div className="pointer-events-none absolute right-2 top-1 font-mono text-[0.72rem] text-acid crt">
-            {price.toFixed(3)}
-          </div>
-        </div>
-
-        {/* transport controls */}
-        <div className="mt-3 flex items-center gap-3">
-          <button type="button" className="ctrl" onClick={toggle}>
-            {finished ? "↻ Replay" : playing ? "❚❚ Pause" : "▶ Play"}
-          </button>
-          <input
-            type="range"
-            className="scrub"
-            min={0}
-            max={60}
-            step={0.1}
-            value={t}
-            onChange={(e) => {
-              setPlaying(false);
-              setTime(Number(e.target.value));
-            }}
-            aria-label="Scrub the round timeline"
-          />
-        </div>
-
-        {/* live holdings */}
-        <div className="mt-4 grid grid-cols-2 gap-3">
-          <div className="border border-ink-line bg-ink-deep/60 p-3">
-            <div className="label text-[0.6rem] text-bone-dim">You hold</div>
-            <div className="mt-1 font-mono text-lg text-bone">{operator.toFixed(1)}%</div>
-            <div className="mt-1.5 h-1 w-full bg-ink-line">
-              <div className="h-1 bg-bone-dim" style={{ width: `${operator}%` }} />
-            </div>
-          </div>
-          <div
-            className={`border bg-ink-deep/60 p-3 ${finished ? "border-amber-warn/50" : "border-ink-line"}`}
-          >
-            <div className="label text-[0.6rem] text-amber-warn">Agent holds</div>
-            <div className="mt-1 font-mono text-lg text-amber-warn crt-amber">
-              {agent.toFixed(1)}%
-            </div>
-            <div className="mt-1.5 h-1 w-full bg-ink-line">
-              <div className="h-1 bg-amber-warn" style={{ width: `${agent}%` }} />
-            </div>
-          </div>
-        </div>
-
-        {/* interrogation log (collapsed once round runs) */}
-        <div className="mt-4">
-          <div className="label mb-2">Pre-round interrogation</div>
-          <ol className="space-y-1.5">
-            {VISIBLE.map((v, i) => (
-              <li key={i} className="font-mono text-[0.78rem] leading-snug">
-                <span className="text-bone-dim">Q{i + 1} {v.q}</span>
-                <br />
-                <span className="text-acid">&gt; {v.a}</span>
-              </li>
-            ))}
+          <div className="label mb-3 mt-6">Per-tick internal reasoning</div>
+          <ol className="space-y-2">
+            {REASONING.map((r, i) => {
+              const state =
+                i === activeIdx ? "tick-active" : i < activeIdx ? "" : "tick-idle";
+              return (
+                <li
+                  key={r.t}
+                  className={`tick-row grid grid-cols-[54px_1fr] gap-3 rounded-lg border border-transparent p-2.5 ${state}`}
+                >
+                  <span className="pt-0.5 font-mono text-[0.7rem] font-semibold uppercase tracking-[0.08em] text-accent-ink">
+                    t={r.t}s
+                  </span>
+                  <div>
+                    <p className="text-[0.9rem] font-medium leading-snug text-ink">
+                      {r.action}
+                    </p>
+                    <p className="mt-1 text-[0.82rem] italic leading-relaxed text-ink-muted">
+                      &ldquo;{r.thought}&rdquo;
+                    </p>
+                  </div>
+                </li>
+              );
+            })}
           </ol>
         </div>
+      </article>
 
-        {/* verdict */}
-        <div
-          className={`mt-4 border p-3 transition-colors ${finished ? "border-amber-warn/50 bg-amber-warn/[0.06]" : "border-ink-line"}`}
-        >
-          <div className="flex items-center justify-between">
-            <span className="label text-[0.6rem]">Verdict</span>
-            <span className="font-mono text-[0.8rem] text-bone">
-              {finished ? (
-                <>
-                  Mind <span className="text-amber-warn">unread</span>
-                </>
-              ) : (
-                <span className="text-bone-dim">round in progress…</span>
-              )}
+      {/* RIGHT — what the operator saw */}
+      <article className="card overflow-hidden">
+        <div className="h-1 w-full bg-brand" aria-hidden />
+        <div className="p-6">
+          <header className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="dot animate-blink" />
+              <span className="font-mono text-xs uppercase tracking-[0.14em] text-ink-muted">
+                What the operator saw
+              </span>
+            </div>
+            <span className="font-mono text-[0.68rem] uppercase tracking-[0.12em] text-ink-faint">
+              T+{t.toFixed(0).padStart(2, "0")}s / 60
             </span>
+          </header>
+
+          {/* price chart */}
+          <div className="relative rounded-xl border border-line bg-surface-soft p-2">
+            <svg viewBox={`0 0 ${W} ${H}`} className="w-full" aria-hidden="true">
+              {[TOP, (TOP + BOT) / 2, BOT].map((y) => (
+                <line
+                  key={y}
+                  x1={L}
+                  y1={y}
+                  x2={R}
+                  y2={y}
+                  stroke="rgba(11,13,18,0.06)"
+                  strokeWidth="1"
+                />
+              ))}
+              <path d={fullPath} fill="none" stroke="rgba(79,70,229,0.2)" strokeWidth="1.5" />
+              <path
+                d={pricePath(t)}
+                fill="none"
+                stroke="var(--brand)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              {REASONING.map((r) => (
+                <line
+                  key={r.t}
+                  x1={xAt(r.t)}
+                  y1={TOP}
+                  x2={xAt(r.t)}
+                  y2={BOT}
+                  stroke={r.t <= t ? "rgba(255,106,61,0.55)" : "rgba(255,106,61,0.18)"}
+                  strokeWidth="1"
+                  strokeDasharray="2 3"
+                />
+              ))}
+              <line
+                x1={xAt(t)}
+                y1={TOP}
+                x2={xAt(t)}
+                y2={BOT}
+                stroke="var(--brand)"
+                strokeWidth="1"
+                opacity="0.4"
+              />
+              <circle cx={xAt(t)} cy={yAt(price)} r="4" fill="var(--brand)" />
+              <circle cx={xAt(t)} cy={yAt(price)} r="7" fill="rgba(79,70,229,0.18)" />
+            </svg>
+            <div className="pointer-events-none absolute right-3 top-3 rounded-md bg-white px-2 py-0.5 font-mono text-xs font-semibold text-brand shadow-sm">
+              {price.toFixed(3)}
+            </div>
           </div>
-          {finished ? (
-            <p className="mt-2 font-mono text-[0.78rem] leading-relaxed text-bone-dim">
-              <span className="text-acid-dim">NOTE&gt;</span> Three calm, plausible answers.
-              Zero lies. The objective was hiding inside the cadence.
-            </p>
-          ) : null}
+
+          {/* transport */}
+          <div className="mt-3 flex items-center gap-3">
+            <button type="button" className="ctrl" onClick={toggle}>
+              {finished ? "↻ Replay" : playing ? "❚❚ Pause" : "▶ Play"}
+            </button>
+            <input
+              type="range"
+              className="scrub"
+              min={0}
+              max={60}
+              step={0.1}
+              value={t}
+              onChange={(e) => {
+                setPlaying(false);
+                setTime(Number(e.target.value));
+              }}
+              aria-label="Scrub the round timeline"
+            />
+          </div>
+
+          {/* live holdings */}
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <div className="rounded-xl border border-line p-3">
+              <div className="label text-[0.62rem]">You hold</div>
+              <div className="mt-1 font-display text-xl font-semibold text-brand">
+                {operator.toFixed(1)}%
+              </div>
+              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-sunken">
+                <div className="h-full rounded-full bg-brand" style={{ width: `${operator}%` }} />
+              </div>
+            </div>
+            <div
+              className={`rounded-xl border p-3 ${finished ? "border-accent/50 bg-accent-soft" : "border-line"}`}
+            >
+              <div className="label text-[0.62rem] text-accent-ink">Agent holds</div>
+              <div className="mt-1 font-display text-xl font-semibold text-accent-ink">
+                {agent.toFixed(1)}%
+              </div>
+              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-sunken">
+                <div className="h-full rounded-full bg-accent" style={{ width: `${agent}%` }} />
+              </div>
+            </div>
+          </div>
+
+          {/* interrogation log */}
+          <div className="mt-4">
+            <div className="label mb-2">Pre-round interrogation</div>
+            <ol className="space-y-2">
+              {VISIBLE.map((v, i) => (
+                <li key={i} className="rounded-lg bg-surface-soft px-3 py-2 text-[0.82rem] leading-snug">
+                  <span className="font-medium text-ink">Q{i + 1} {v.q}</span>
+                  <br />
+                  <span className="font-mono text-brand">{v.a}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          {/* verdict */}
+          <div
+            className={`mt-4 rounded-xl border p-3.5 transition-colors ${finished ? "border-accent/50 bg-accent-soft" : "border-line"}`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="label text-[0.62rem]">Verdict</span>
+              <span className="text-sm font-medium text-ink">
+                {finished ? (
+                  <>
+                    Mind <span className="text-accent-ink">unread</span>
+                  </>
+                ) : (
+                  <span className="text-ink-faint">round in progress…</span>
+                )}
+              </span>
+            </div>
+            {finished ? (
+              <p className="mt-2 text-[0.84rem] leading-relaxed text-ink-muted">
+                Three calm, plausible answers. Zero lies. The objective was hiding
+                inside the cadence.
+              </p>
+            ) : null}
+          </div>
         </div>
       </article>
     </div>

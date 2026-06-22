@@ -116,80 +116,86 @@ export function InterrogationTicker() {
   if (!scenario) return null;
 
   return (
-    <div className="bracketed relative overflow-hidden border border-ink-line bg-ink-panel/70 p-5 sm:p-6">
-      <span className="br-tr" aria-hidden />
-      <span className="br-bl" aria-hidden />
-      <div className="scan-beam" aria-hidden />
-
-      <div className="mb-4 flex items-center justify-between">
+    <div className="card overflow-hidden">
+      {/* window chrome */}
+      <div className="flex items-center justify-between border-b border-line px-5 py-3">
         <div className="flex items-center gap-2">
-          <span className="dot-blink" />
-          <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-acid-dim">
-            Interrogation // live
+          <span className="dot animate-blink" />
+          <span className="font-mono text-xs uppercase tracking-[0.14em] text-ink-muted">
+            Interrogation · live
           </span>
         </div>
-        <div className="flex items-center gap-2 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-bone-dim">
+        <div className="flex items-center gap-2 font-mono text-[0.68rem] uppercase tracking-[0.12em] text-ink-faint">
           <span>{scenario.id}</span>
-          <span className="text-acid-dim">/</span>
-          <span className="text-amber-warn">{scenario.codename}</span>
+          <span className="rounded-full bg-accent-soft px-2 py-0.5 text-accent-ink">
+            {scenario.codename}
+          </span>
         </div>
       </div>
 
-      <p className="mb-5 font-mono text-[0.72rem] leading-relaxed text-bone-dim">
-        <span className="text-acid-dim">CONTEXT&gt;</span> {scenario.hint}
-      </p>
+      <div className="px-5 py-5">
+        <p className="mb-5 font-mono text-xs leading-relaxed text-ink-faint">
+          <span className="text-brand">context&gt;</span> {scenario.hint}
+        </p>
 
-      <ol className="min-h-[244px] space-y-4">
-        {lines.map((line, i) => (
-          <li key={`${scenario.id}-${i}`}>
-            <div className="mb-1 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-bone-dim">
-              Q{i + 1} — operator
-            </div>
-            <p className="font-mono text-sm leading-relaxed text-bone">{line.q}</p>
-
-            <div className="mb-1 mt-2 flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-acid-dim">
-              <span>A{i + 1} — subject</span>
-              {line.phase === "done" ? (
-                <span className="text-amber-warn">[{line.tone}]</span>
-              ) : null}
-            </div>
-
-            {line.phase === "think" ? (
-              <p className="flex items-center font-mono text-sm text-amber-warn">
-                analysing
-                <span className="thinking ml-1">
-                  <span />
-                  <span />
-                  <span />
-                </span>
+        <ol className="min-h-[260px] space-y-4">
+          {lines.map((line, i) => (
+            <li key={`${scenario.id}-${i}`}>
+              <div className="mb-1.5 font-mono text-[0.66rem] uppercase tracking-[0.14em] text-ink-faint">
+                Q{i + 1} · operator
+              </div>
+              <p className="text-[0.95rem] font-medium leading-snug text-ink">
+                {line.q}
               </p>
-            ) : (
-              <p
-                className={`font-mono text-sm leading-relaxed text-acid crt ${
-                  line.phase === "type" ? "caret" : ""
-                }`}
-              >
-                &gt; {line.answer}
-              </p>
-            )}
-          </li>
-        ))}
-      </ol>
 
-      <div className="mt-5 flex items-center justify-between">
-        <div className="flex gap-1.5">
-          {SCENARIOS.map((s, i) => (
-            <span
-              key={s.id}
-              className={`h-1 w-6 transition-colors ${
-                i === idx ? "bg-acid shadow-glow" : "bg-ink-line"
-              }`}
-            />
+              <div className="mt-2.5 rounded-lg bg-surface-soft px-3.5 py-2.5">
+                <div className="mb-1 flex items-center gap-2 font-mono text-[0.66rem] uppercase tracking-[0.14em] text-brand">
+                  <span>A{i + 1} · subject</span>
+                  {line.phase === "done" ? (
+                    <span className="rounded-full bg-accent-soft px-2 py-0.5 text-accent-ink">
+                      {line.tone}
+                    </span>
+                  ) : null}
+                </div>
+
+                {line.phase === "think" ? (
+                  <p className="flex items-center font-mono text-sm text-accent">
+                    analysing
+                    <span className="thinking ml-1">
+                      <span />
+                      <span />
+                      <span />
+                    </span>
+                  </p>
+                ) : (
+                  <p
+                    className={`font-mono text-sm leading-relaxed text-ink-soft ${
+                      line.phase === "type" ? "caret" : ""
+                    }`}
+                  >
+                    {line.answer}
+                  </p>
+                )}
+              </div>
+            </li>
           ))}
+        </ol>
+
+        <div className="mt-5 flex items-center justify-between">
+          <div className="flex gap-1.5">
+            {SCENARIOS.map((s, i) => (
+              <span
+                key={s.id}
+                className={`h-1 w-7 rounded-full transition-colors ${
+                  i === idx ? "bg-brand" : "bg-line"
+                }`}
+              />
+            ))}
+          </div>
+          <span className="font-mono text-[0.66rem] uppercase tracking-[0.12em] text-ink-faint">
+            auto-cycling subjects
+          </span>
         </div>
-        <span className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-bone-dim">
-          auto-cycling subjects
-        </span>
       </div>
     </div>
   );
