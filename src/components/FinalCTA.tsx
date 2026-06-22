@@ -35,13 +35,8 @@ export function FinalCTA() {
               <span className="dot-blink" />
               Enter the Lab
             </Link>
-            <a
-              href="https://madscientists.io/hackathon"
-              target="_blank"
-              rel="noreferrer"
-              className="btn-ghost"
-            >
-              About the hackathon ↗
+            <a href="#sample" className="btn-ghost">
+              Watch a round replay
             </a>
           </div>
         </Reveal>

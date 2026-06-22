@@ -27,12 +27,12 @@ export function SiteNav() {
               Why now
             </a>
             <a
-              href="https://madscientists.io/hackathon"
+              href="https://github.com/alisaaonchain/mind-the-mind"
               target="_blank"
               rel="noreferrer"
               className="hover:text-bone transition-colors"
             >
-              Hackathon ↗
+              Source ↗
             </a>
           </nav>
 

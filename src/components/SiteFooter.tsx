@@ -24,20 +24,13 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <div className="label mb-3">Hackathon</div>
+            <div className="label mb-3">The experiment</div>
             <ul className="space-y-2 text-sm">
-              <li>
-                <a
-                  href="https://madscientists.io/hackathon"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-bone hover:text-acid transition-colors"
-                >
-                  Mad Easy on Cosmos ↗
-                </a>
+              <li className="text-bone-dim">Lab Experiment 001</li>
+              <li className="text-bone-dim">Adversarial AI trading game</li>
+              <li className="text-bone-dim">
+                Status: <span className="text-acid">in testing</span>
               </li>
-              <li className="text-bone-dim">Showcase: Jun 22 — Jun 29, 2026</li>
-              <li className="text-bone-dim">Track: AI agents / on-chain</li>
             </ul>
           </div>
 

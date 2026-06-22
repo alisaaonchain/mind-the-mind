@@ -22,7 +22,7 @@ export function Hero() {
             <Reveal>
               <span className="kicker">
                 <span className="dot-blink" />
-                Lab Experiment 001 / Mad Easy on Cosmos / Showcase Jun 22–29
+                Lab Experiment 001 / Adversarial AI trading game / In testing
               </span>
             </Reveal>
 

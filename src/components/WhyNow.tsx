@@ -20,8 +20,8 @@ const NOTES: Note[] = [
   },
   {
     n: "04",
-    title: "Built for Cosmos, but the question is universal.",
-    body: "The bonding curve runs on Mad Easy on Cosmos. The behaviour — agents with goals you can't see — is shipping everywhere right now. This is the cleanest sandbox to study it.",
+    title: "It's on-chain, but the question is universal.",
+    body: "The bonding curve settles on-chain. The behaviour — agents with goals you can't see — is shipping everywhere right now. This is the cleanest sandbox to study it.",
   },
 ];
 

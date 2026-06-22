@@ -4,8 +4,6 @@
 
 A 60-second trading game where an AI has a hidden objective. The player gets three questions before it acts. The AI must answer but can be evasive. Then both trade a bonding curve for 60 seconds. After, the secret objective is revealed alongside the AI's per-tick reasoning. Reading its mind is how you win.
 
-Built for the **Mad Easy on Cosmos** hackathon — [madscientists.io/hackathon](https://madscientists.io/hackathon). Showcase: Jun 22–29.
-
 ---
 
 ## What's in this repo
