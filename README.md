@@ -120,6 +120,8 @@ A real model **role-plays the agent**, where it is most visible — never the tr
   from its actual move log.
 - **The key stays server-side** — used only in the `/api/agent` route handler,
   never shipped to the client.
+- **Abuse-protected** — the proxy is rate-limited (per-IP + a global per-instance
+  cap) so the API key can't be drained by strangers.
 - **Graceful by design** — no key, an upstream failure, or a 9-second timeout
   all fall back to the scripted answer, so the game never breaks.
 
@@ -163,7 +165,7 @@ player wallet. A backend signer (the contract owner) writes each outcome to
 
 ## The agents
 
-One of six archetypes is drawn each round (selected by the seed block). Each is a
+One of ten archetypes is drawn each round (selected by the seed block). Each is a
 distinct trading policy that doubles as a reasoning generator:
 
 | Codename | Hidden objective |
@@ -174,6 +176,10 @@ distinct trading policy that doubles as a reasoning generator:
 | **Echo** | Mirror whatever you do. |
 | **Diamond** | One early buy, then hold no matter what. |
 | **Shadow** | Front-run your buys and ride your slippage. |
+| **Late-Whale** | Sit out, then buy a huge position in the final seconds. |
+| **Flash-Crash** | Sell the entire position in the opening seconds. |
+| **Inverse** | Fade you — sell when you buy, buy when you sell. |
+| **Whipsaw** | Churn the curve, alternating buys and sells every tick. |
 
 ---
 

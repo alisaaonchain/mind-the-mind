@@ -6,7 +6,7 @@ import { Reveal } from "@/components/ui/Reveal";
 const STATS: { label: string; value: string; suffix?: string }[] = [
   { label: "Questions", value: "3" },
   { label: "Round", value: "60", suffix: "s" },
-  { label: "Hidden goals", value: "10+" },
+  { label: "Hidden goals", value: "10" },
 ];
 
 const GOALS = [

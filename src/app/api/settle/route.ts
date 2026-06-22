@@ -1,4 +1,5 @@
 import { JsonRpcProvider, Wallet, Interface, encodeBytes32String } from "ethers";
+import { rateLimit, clientIp } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -44,6 +45,14 @@ export async function POST(req: Request) {
   const address = process.env.ROUNDLOG_ADDRESS;
   if (!rpc || !key || !address) {
     return Response.json({ ok: false, reason: "not_configured" });
+  }
+
+  // Abuse protection: per-IP and global per-instance caps protect the signer.
+  if (
+    !rateLimit(`settle:${clientIp(req)}`, 8, 60_000) ||
+    !rateLimit("settle:global", 60, 60_000)
+  ) {
+    return Response.json({ ok: false, reason: "rate_limited" });
   }
 
   let body: Body;
