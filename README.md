@@ -36,31 +36,56 @@ npm run lint       # next lint
 ## Roadmap
 
 - [x] Landing page
-- [ ] `/play` — interrogation room (3 questions to an agent with a hidden objective)
-- [ ] `/play` — 60s tick engine on a bonding curve, you vs the agent
-- [ ] `/play` — reveal screen (hidden objective + per-tick reasoning trace)
+- [x] `/play` — interrogation room (pick 3 questions; the agent answers, evasively)
+- [x] `/play` — 60s tick engine on a constant-product bonding curve, you vs the agent
+- [x] `/play` — reveal screen (guess its objective, then see the per-tick reasoning trace)
+- [ ] Real LLM-driven agents + free-form questions (currently deterministic archetypes)
+- [ ] Backend + persistence / leaderboards
+
+## The game (`/play`)
+
+Fully client-side, no backend. Flow: **Interrogate → Trade → Reveal**.
+
+- **Interrogate** — pick 3 questions from a bank. The assigned agent has a hidden
+  objective and answers with scripted, often evasive, replies.
+- **Trade** — a 60-second round on a constant-product AMM (`x · y = k`). You and the
+  agent both trade against the same pool, one tick per second. You see the agent's
+  *moves*, not its reasoning. Buy/sell shift the curve for both of you.
+- **Reveal** — guess what it was really doing, then the hidden objective and its full
+  per-tick internal reasoning are unmasked next to what it told you in interrogation.
+
+Six deterministic agent archetypes (Quiet-Accumulate, Mirror-Dump, Slow-Bleed, Echo,
+Diamond, Shadow), each a distinct policy + reasoning generator. One is drawn at random
+per round.
 
 ## Project layout
 
 ```
 src/
   app/
-    layout.tsx          # global shell, fonts, scanline overlay
+    layout.tsx          # global shell, fonts (Space Grotesk / Inter / JetBrains Mono)
     page.tsx            # landing page composition
-    play/page.tsx       # /play stub (lab being calibrated)
-    globals.css         # tailwind + scanlines + grain + CRT glow
+    play/page.tsx       # /play — renders the game <Lab/>
+    globals.css         # tailwind + light theme + motion utilities
   components/
-    SiteNav.tsx
-    Hero.tsx
-    HowItWorks.tsx
-    SampleRound.tsx
-    WhyNow.tsx
-    FinalCTA.tsx
-    SiteFooter.tsx
-    InterrogationTicker.tsx  # client — cycling transcript
+    SiteNav.tsx  Hero.tsx  HowItWorks.tsx  SampleRound.tsx  SampleReplay.tsx
+    WhyNow.tsx  FinalCTA.tsx  SiteFooter.tsx  InterrogationTicker.tsx
+    play/
+      Lab.tsx                # phase orchestrator (client)
+      InterrogationRoom.tsx  # question bank + typewriter answers
+      TradingRoom.tsx        # live chart, wallets, buy/sell controls
+      GuessScreen.tsx        # "what was it doing?" gate
+      RevealScreen.tsx       # objective + reasoning trace + verdict
+      PriceChart.tsx         # live SVG price chart
     ui/
-      CornerFrame.tsx        # corner-bracket panel chrome
-      BlinkingDot.tsx
+      Waveform.tsx  BondingCurve.tsx  Reveal.tsx  BlinkingDot.tsx
+  lib/
+    game/
+      curve.ts        # constant-product AMM math
+      types.ts        # shared game types
+      questions.ts    # interrogation question bank
+      agents.ts       # 6 agent archetypes (objective + answers + policy)
+      useGame.ts       # state machine + tick simulation + scoring
 ```
 
 ## License
