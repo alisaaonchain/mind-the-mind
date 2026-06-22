@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
+import { Waveform } from "@/components/ui/Waveform";
 
 export const metadata: Metadata = {
   title: "/play — Lab being calibrated · Mind the Mind",
@@ -37,6 +38,10 @@ export default function PlayPage() {
               are coming online next. While we wire them up, here&apos;s what
               the lab is doing right now.
             </p>
+
+            <div className="mt-8 max-w-md opacity-80">
+              <Waveform height={36} speed={5} tone="amber" />
+            </div>
 
             <div className="mt-10 bracketed bg-ink-panel/60 border border-ink-line p-6 relative overflow-hidden">
               <span className="br-tr" aria-hidden />

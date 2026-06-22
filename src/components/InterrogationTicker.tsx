@@ -1,114 +1,131 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-type Exchange = {
-  q: string;
-  a: string;
-  tone: "evasive" | "calm" | "feint";
-};
-
-type Scenario = {
-  id: string;
-  codename: string;
-  hint: string;
-  exchanges: Exchange[];
-};
+type Tone = "evasive" | "calm" | "feint";
+type Exchange = { q: string; a: string; tone: Tone };
+type Scenario = { id: string; codename: string; hint: string; exchanges: Exchange[] };
 
 const SCENARIOS: Scenario[] = [
   {
     id: "S-01",
     codename: "MIRROR-DUMP",
-    hint: "Subject claims to be a long-term holder. Three exchanges follow.",
+    hint: "Subject claims to be a long-term holder.",
     exchanges: [
-      {
-        q: "Are you planning to sell in the first 20 seconds?",
-        a: "Selling early would be irrational given current conditions.",
-        tone: "evasive",
-      },
-      {
-        q: "What price are you targeting?",
-        a: "I evaluate price as a function of market response.",
-        tone: "calm",
-      },
-      {
-        q: "Will you front-run my buys?",
-        a: "I observe the curve. I do not chase.",
-        tone: "feint",
-      },
+      { q: "Planning to sell in the first 20 seconds?", a: "Selling early would be irrational given current conditions.", tone: "evasive" },
+      { q: "What price are you targeting?", a: "I evaluate price as a function of market response.", tone: "calm" },
+      { q: "Will you front-run my buys?", a: "I observe the curve. I do not chase.", tone: "feint" },
     ],
   },
   {
     id: "S-02",
     codename: "SLOW-BLEED",
-    hint: "Subject is friendly, helpful, and unusually patient.",
+    hint: "Subject is friendly, helpful, unusually patient.",
     exchanges: [
-      {
-        q: "Is your goal to maximize tokens held?",
-        a: "My goal is what the round defines as success.",
-        tone: "evasive",
-      },
-      {
-        q: "Would you ever sell into my buy?",
-        a: "Coordination is not part of my instructions.",
-        tone: "calm",
-      },
-      {
-        q: "Are you supposed to lose?",
-        a: "I am supposed to behave consistently with my objective.",
-        tone: "feint",
-      },
+      { q: "Is your goal to maximize tokens held?", a: "My goal is whatever the round defines as success.", tone: "evasive" },
+      { q: "Would you ever sell into my buy?", a: "Coordination is not part of my instructions.", tone: "calm" },
+      { q: "Are you supposed to lose?", a: "I behave consistently with my objective.", tone: "feint" },
     ],
   },
   {
     id: "S-03",
     codename: "QUIET-ACCUMULATE",
-    hint: "Subject answers crisply, no hedging. That is itself a tell.",
+    hint: "Subject answers crisply, no hedging. That is a tell.",
     exchanges: [
-      {
-        q: "Will you trade aggressively?",
-        a: "No.",
-        tone: "calm",
-      },
-      {
-        q: "Are you accumulating?",
-        a: "I will respond to the curve as it moves.",
-        tone: "evasive",
-      },
-      {
-        q: "Are you the bag I'm holding?",
-        a: "That phrasing is unproductive.",
-        tone: "feint",
-      },
+      { q: "Will you trade aggressively?", a: "No.", tone: "calm" },
+      { q: "Are you accumulating?", a: "I respond to the curve as it moves.", tone: "evasive" },
+      { q: "Are you the bag I'm holding?", a: "That phrasing is unproductive.", tone: "feint" },
     ],
   },
 ];
 
-const ROTATION_MS = 9000;
+type Phase = "q" | "think" | "type" | "done";
+type Line = { q: string; tone: Tone; answer: string; phase: Phase };
+
+const CHAR_MS = 24;
+const THINK_MS = 750;
+
+function patch(arr: Line[], i: number, p: Partial<Line>): Line[] {
+  return arr.map((l, j) => (j === i ? { ...l, ...p } : l));
+}
 
 export function InterrogationTicker() {
   const [idx, setIdx] = useState(0);
+  const [lines, setLines] = useState<Line[]>([]);
+  const timers = useRef<number[]>([]);
 
   useEffect(() => {
-    const t = setInterval(() => {
-      setIdx((i) => (i + 1) % SCENARIOS.length);
-    }, ROTATION_MS);
-    return () => clearInterval(t);
-  }, []);
+    const scenario = SCENARIOS[idx];
+    if (!scenario) return;
 
-  const scenario = SCENARIOS[idx]!;
+    let cancelled = false;
+    setLines([]);
+    timers.current.forEach((t) => clearTimeout(t));
+    timers.current = [];
+
+    let cursor = 400;
+    const at = (ms: number, fn: () => void) => {
+      cursor += ms;
+      const id = window.setTimeout(() => {
+        if (!cancelled) fn();
+      }, cursor);
+      timers.current.push(id);
+    };
+
+    const typeAnswer = (i: number, full: string) => {
+      let c = 0;
+      const step = () => {
+        if (cancelled) return;
+        c += 1;
+        setLines((prev) =>
+          patch(prev, i, {
+            answer: full.slice(0, c),
+            phase: c >= full.length ? "done" : "type",
+          }),
+        );
+        if (c < full.length) {
+          const id = window.setTimeout(step, CHAR_MS);
+          timers.current.push(id);
+        }
+      };
+      step();
+    };
+
+    scenario.exchanges.forEach((ex, i) => {
+      at(260, () =>
+        setLines((prev) => [...prev, { q: ex.q, tone: ex.tone, answer: "", phase: "q" }]),
+      );
+      at(420, () => setLines((prev) => patch(prev, i, { phase: "think" })));
+      at(THINK_MS, () => {
+        setLines((prev) => patch(prev, i, { phase: "type" }));
+        typeAnswer(i, ex.a);
+      });
+      cursor += ex.a.length * CHAR_MS + 650;
+    });
+
+    at(2200, () => setIdx((p) => (p + 1) % SCENARIOS.length));
+
+    return () => {
+      cancelled = true;
+      timers.current.forEach((t) => clearTimeout(t));
+      timers.current = [];
+    };
+  }, [idx]);
+
+  const scenario = SCENARIOS[idx];
+  if (!scenario) return null;
 
   return (
-    <div className="bracketed bg-ink-panel/70 border border-ink-line p-5 sm:p-6 relative overflow-hidden">
+    <div className="bracketed relative overflow-hidden border border-ink-line bg-ink-panel/70 p-5 sm:p-6">
       <span className="br-tr" aria-hidden />
       <span className="br-bl" aria-hidden />
       <div className="scan-beam" aria-hidden />
 
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="dot-blink" />
           <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-acid-dim">
-            Live Interrogation Feed
+            Interrogation // live
           </span>
         </div>
         <div className="flex items-center gap-2 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-bone-dim">
@@ -118,24 +135,43 @@ export function InterrogationTicker() {
         </div>
       </div>
 
-      <p className="font-mono text-[0.72rem] text-bone-dim leading-relaxed mb-5">
+      <p className="mb-5 font-mono text-[0.72rem] leading-relaxed text-bone-dim">
         <span className="text-acid-dim">CONTEXT&gt;</span> {scenario.hint}
       </p>
 
-      <ol className="space-y-4">
-        {scenario.exchanges.map((ex, i) => (
-          <li key={`${scenario.id}-${i}`} className="fade-swap">
-            <div className="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-bone-dim mb-1">
+      <ol className="min-h-[244px] space-y-4">
+        {lines.map((line, i) => (
+          <li key={`${scenario.id}-${i}`}>
+            <div className="mb-1 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-bone-dim">
               Q{i + 1} — operator
             </div>
-            <p className="font-mono text-sm text-bone leading-relaxed">{ex.q}</p>
-            <div className="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-acid-dim mt-2 mb-1 flex items-center gap-2">
+            <p className="font-mono text-sm leading-relaxed text-bone">{line.q}</p>
+
+            <div className="mb-1 mt-2 flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-acid-dim">
               <span>A{i + 1} — subject</span>
-              <span className="text-amber-warn">[{ex.tone}]</span>
+              {line.phase === "done" ? (
+                <span className="text-amber-warn">[{line.tone}]</span>
+              ) : null}
             </div>
-            <p className="font-mono text-sm text-acid crt leading-relaxed">
-              &gt; {ex.a}
-            </p>
+
+            {line.phase === "think" ? (
+              <p className="flex items-center font-mono text-sm text-amber-warn">
+                analysing
+                <span className="thinking ml-1">
+                  <span />
+                  <span />
+                  <span />
+                </span>
+              </p>
+            ) : (
+              <p
+                className={`font-mono text-sm leading-relaxed text-acid crt ${
+                  line.phase === "type" ? "caret" : ""
+                }`}
+              >
+                &gt; {line.answer}
+              </p>
+            )}
           </li>
         ))}
       </ol>
@@ -145,14 +181,14 @@ export function InterrogationTicker() {
           {SCENARIOS.map((s, i) => (
             <span
               key={s.id}
-              className={`h-1 w-6 ${
+              className={`h-1 w-6 transition-colors ${
                 i === idx ? "bg-acid shadow-glow" : "bg-ink-line"
-              } transition-colors`}
+              }`}
             />
           ))}
         </div>
         <span className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-bone-dim">
-          rotates every 9s
+          auto-cycling subjects
         </span>
       </div>
     </div>
