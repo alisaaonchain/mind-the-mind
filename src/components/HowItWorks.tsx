@@ -1,3 +1,5 @@
+import { Reveal } from "@/components/ui/Reveal";
+
 type Step = {
   step: string;
   title: string;
@@ -11,7 +13,7 @@ const STEPS: Step[] = [
     step: "01",
     title: "Interrogate",
     duration: "Ask 3 questions",
-    body: "Before any trade happens, you get three questions. The agent must respond. It cannot refuse, but it can be evasive, deflect, or feint.",
+    body: "Before any trade happens, you get three questions. The agent must respond. It cannot refuse — but it can be evasive, deflect, or feint.",
     bullets: [
       "Free-form questions, no template",
       "Tone tags surface in the log",
@@ -26,17 +28,17 @@ const STEPS: Step[] = [
     bullets: [
       "Real-time tick engine",
       "Shared liquidity, asymmetric goals",
-      "What you saw in interrogation is the only edge you get",
+      "Your interrogation read is the only edge you get",
     ],
   },
   {
     step: "03",
     title: "Reveal",
     duration: "Verdict",
-    body: "After the round, its hidden objective is shown — alongside its per-tick reasoning. You see exactly what it was thinking versus what it told you.",
+    body: "After the round its hidden objective is shown — alongside its per-tick reasoning. You see exactly what it was thinking versus what it told you.",
     bullets: [
       "Objective unmasked",
-      "Internal reasoning vs visible answer, side by side",
+      "Inner reasoning vs visible answer, side by side",
       "Score: did you read the mind?",
     ],
   },
@@ -44,56 +46,57 @@ const STEPS: Step[] = [
 
 export function HowItWorks() {
   return (
-    <section id="how" className="relative py-20 sm:py-28 border-t border-ink-line">
+    <section id="how" className="relative border-t border-ink-line py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <div className="flex items-end justify-between flex-wrap gap-4 mb-12">
-          <div>
-            <div className="kicker">
-              <span className="dot-blink" />
-              Protocol
-            </div>
-            <h2 className="font-mono text-3xl sm:text-4xl text-bone mt-4 tracking-tight">
-              How a round works
-            </h2>
-          </div>
-          <p className="max-w-md text-bone-dim">
-            Three phases, ninety seconds total. Most of that is the trade.
-            Most of the game is the questions.
-          </p>
-        </div>
-
-        <ol className="grid md:grid-cols-3 gap-5 lg:gap-6">
-          {STEPS.map((s) => (
-            <li
-              key={s.step}
-              className="bracketed bg-ink-panel/60 border border-ink-line p-6 relative group"
-            >
-              <span className="br-tr" aria-hidden />
-              <span className="br-bl" aria-hidden />
-              <div className="flex items-baseline justify-between">
-                <span className="font-mono text-acid crt text-lg tracking-[0.2em]">
-                  {s.step}
-                </span>
-                <span className="label text-bone-dim">{s.duration}</span>
+        <Reveal>
+          <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <div className="kicker">
+                <span className="dot-blink" />
+                Protocol
               </div>
-              <h3 className="font-mono text-2xl text-bone mt-3">{s.title}</h3>
-              <p className="mt-3 text-bone-dim leading-relaxed text-[0.95rem]">
-                {s.body}
-              </p>
-              <ul className="mt-5 space-y-2">
-                {s.bullets.map((b) => (
-                  <li
-                    key={b}
-                    className="font-mono text-[0.78rem] text-bone leading-relaxed flex gap-2"
-                  >
-                    <span className="text-acid-dim shrink-0">›</span>
-                    <span>{b}</span>
-                  </li>
-                ))}
-              </ul>
-            </li>
+              <h2 className="mt-4 font-mono text-3xl tracking-tight text-bone sm:text-4xl">
+                How a round works
+              </h2>
+            </div>
+            <p className="max-w-md text-bone-dim">
+              Three phases, ninety seconds total. Most of that is the trade. Most
+              of the game is the questions.
+            </p>
+          </div>
+        </Reveal>
+
+        <div className="grid gap-5 md:grid-cols-3 lg:gap-6">
+          {STEPS.map((s, i) => (
+            <Reveal key={s.step} delay={i * 90}>
+              <div className="bracketed group relative h-full border border-ink-line bg-ink-panel/60 p-6">
+                <span className="br-tr" aria-hidden />
+                <span className="br-bl" aria-hidden />
+                <div className="flex items-baseline justify-between">
+                  <span className="font-mono text-lg tracking-[0.2em] text-acid crt">
+                    {s.step}
+                  </span>
+                  <span className="label text-bone-dim">{s.duration}</span>
+                </div>
+                <h3 className="mt-3 font-mono text-2xl text-bone">{s.title}</h3>
+                <p className="mt-3 text-[0.95rem] leading-relaxed text-bone-dim">
+                  {s.body}
+                </p>
+                <ul className="mt-5 space-y-2">
+                  {s.bullets.map((b) => (
+                    <li
+                      key={b}
+                      className="flex gap-2 font-mono text-[0.78rem] leading-relaxed text-bone"
+                    >
+                      <span className="shrink-0 text-acid-dim">›</span>
+                      <span>{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
           ))}
-        </ol>
+        </div>
       </div>
     </section>
   );

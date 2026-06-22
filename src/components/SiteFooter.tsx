@@ -1,8 +1,12 @@
 import { BlinkingDot } from "@/components/ui/BlinkingDot";
+import { Waveform } from "@/components/ui/Waveform";
 
 export function SiteFooter() {
   return (
     <footer className="border-t border-ink-line bg-ink-deep/60">
+      <div className="opacity-30">
+        <Waveform height={28} speed={8} calm />
+      </div>
       <div className="mx-auto max-w-7xl px-5 sm:px-8 py-12">
         <div className="grid md:grid-cols-3 gap-8">
           <div>
