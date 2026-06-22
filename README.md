@@ -143,6 +143,22 @@ wallet, key, or contract.
 > A heavier follow-up — a **stake + settle contract on Cosmos EVM** — is on the
 > roadmap; the read-only seed is the lightweight, honest first step.
 
+## On-chain settlement (Cosmos EVM)
+
+Beyond the read-only seed, finished rounds can be **recorded on-chain** — with no
+player wallet. A backend signer (the contract owner) writes each outcome to
+[`RoundLog.sol`](contracts/RoundLog.sol), and the reveal screen shows a
+**"settled on-chain · view tx ↗"** link to the block explorer.
+
+- `POST /api/settle` signs and broadcasts a `recordRound(...)` tx (agent, seed
+  block, P&L, mind-read, won) using a server-held key — players sign nothing.
+- Fully optional and gated on env: unset = settlement is skipped, game unaffected.
+- Setup (deploy once + env vars) is in [`contracts/README.md`](contracts/README.md).
+
+> Why server-signed and not a player wallet? The judge is an AI and can't hold a
+> wallet — this keeps the demo one-click while still producing real, verifiable
+> on-chain transactions.
+
 ---
 
 ## The agents
@@ -213,9 +229,10 @@ src/
 - [x] Live LLM agent (interrogation + debrief) via OpenRouter, with fallback
 - [x] Cosmos relevance — rounds seeded from a live Cosmos Hub block (verifiable)
 - [x] CI (build · typecheck · lint)
+- [x] On-chain settlement — finished rounds recorded on Cosmos EVM via a backend signer (no player wallet)
 - [ ] Free-form interrogation questions (currently a curated bank)
-- [ ] Stake + settle contract on Cosmos EVM
-- [ ] Backend persistence + leaderboards / seasons
+- [ ] Real player stakes (opt-in wallet) + leaderboards / seasons
+- [ ] Backend persistence
 
 ## License
 

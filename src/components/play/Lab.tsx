@@ -138,6 +138,7 @@ export function Lab() {
             history={g.history}
             asked={g.asked}
             result={g.result}
+            seedBlock={g.seed?.height ?? 0}
             onReplay={g.reset}
           />
         ) : null}
