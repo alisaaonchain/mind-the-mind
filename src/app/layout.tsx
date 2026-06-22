@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   title: "Mind the Mind — It's plotting something.",
   description:
     "A 60-second trading game where the AI has a hidden objective. You get three questions before it acts. Reading its mind is how you win. Lab Experiment 001.",
-  metadataBase: new URL("https://mindthemind.xyz"),
+  metadataBase: new URL("https://mind-the-mind.vercel.app"),
   openGraph: {
     title: "Mind the Mind — It's plotting something.",
     description:

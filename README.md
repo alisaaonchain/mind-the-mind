@@ -18,13 +18,15 @@ you. **Reading its mind is how you win.**
 
 *Lab Experiment 001*
 
+**[▶ Play it live](https://mind-the-mind.vercel.app/play)**
+
 </div>
 
 ---
 
 ## Demo
 
-> **Live:** _add your deployment URL here_ — the game is at `/play`.
+> **Live:** **[mind-the-mind.vercel.app](https://mind-the-mind.vercel.app/)** — play the game at **[/play](https://mind-the-mind.vercel.app/play)**.
 
 On the live deployment the agent is driven by a real LLM (OpenRouter) and each
 round is seeded from a live Cosmos Hub block. Both degrade gracefully, so the

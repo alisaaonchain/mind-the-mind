@@ -67,7 +67,7 @@ export async function POST(req: Request) {
       headers: {
         Authorization: `Bearer ${key}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://mindthemind.xyz",
+        "HTTP-Referer": "https://mind-the-mind.vercel.app",
         "X-Title": "Mind the Mind",
       },
       body: JSON.stringify({
