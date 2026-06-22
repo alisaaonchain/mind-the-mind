@@ -26,6 +26,9 @@ export function SiteNav() {
             <a href="#why" className="transition-colors hover:text-ink">
               Why now
             </a>
+            <a href="#economics" className="transition-colors hover:text-ink">
+              Economics
+            </a>
             <a
               href="https://github.com/alisaaonchain/mind-the-mind"
               target="_blank"
