@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { QUESTIONS } from "@/lib/game/questions";
 import { callAgent } from "@/lib/game/llm";
+import { settleRound, type SettleResult } from "@/lib/game/settleClient";
 import type { Agent, GameResult, TickRecord } from "@/lib/game/types";
 
 type Props = {
@@ -10,20 +11,23 @@ type Props = {
   history: TickRecord[];
   asked: string[];
   result: GameResult;
+  seedBlock: number;
   onReplay: () => void;
 };
 
-export function RevealScreen({ agent, history, asked, result, onReplay }: Props) {
+export function RevealScreen({ agent, history, asked, result, seedBlock, onReplay }: Props) {
   const acted = history.filter((h) => h.kind !== "hold");
   const [debrief, setDebrief] = useState<string | null>(null);
+  const [settle, setSettle] = useState<SettleResult | "pending" | null>("pending");
   const requested = useRef(false);
 
   useEffect(() => {
     if (requested.current) return;
     requested.current = true;
+    let live = true;
+
     const actions =
       acted.map((h) => `${h.t}s ${h.kind}`).join(", ") || "held the entire round";
-    let live = true;
     callAgent({
       mode: "debrief",
       codename: agent.codename,
@@ -32,11 +36,25 @@ export function RevealScreen({ agent, history, asked, result, onReplay }: Props)
     }).then((text) => {
       if (live) setDebrief(text);
     });
+
+    settleRound({
+      agent: agent.codename,
+      seedBlock,
+      playerPnl: result.playerPnl,
+      agentPnl: result.agentPnl,
+      mindRead: result.mindRead,
+      won: result.won,
+    }).then((r) => {
+      if (live) setSettle(r);
+    });
+
     return () => {
       live = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const settled = settle && settle !== "pending" && settle.ok ? settle : null;
 
   return (
     <div className="space-y-6">
@@ -55,6 +73,17 @@ export function RevealScreen({ agent, history, asked, result, onReplay }: Props)
               It was <span className="font-medium text-ink">{agent.name}</span> ·{" "}
               <span className="font-mono text-sm text-accent-ink">{agent.codename}</span>
             </p>
+            {settled ? (
+              <a
+                href={settled.explorer ?? undefined}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-brand/40 bg-brand-soft px-3 py-1 font-mono text-[0.7rem] text-brand transition-colors hover:bg-brand/10"
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+                {settled.explorer ? "settled on-chain · view tx ↗" : "settled on-chain"}
+              </a>
+            ) : null}
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-xl border border-line p-3">
