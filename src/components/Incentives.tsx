@@ -7,15 +7,15 @@ type Card = { title: string; body: string };
 const CARDS: Card[] = [
   {
     title: "Skin in the game",
-    body: "Every round takes a buy-in into a shared pot on the bonding curve. Your trades move a real price and your P&L is real — not a cosmetic score.",
+    body: "Each round takes a buy-in from your credit balance. The bonding-curve trade is real game math — your P&L comes from how the price actually moved, not a flat score.",
   },
   {
     title: "Reading beats luck",
-    body: "Payout weights two things: your P&L and whether you correctly called the agent's hidden objective. Profit without a read pays little; a clean read multiplies it. Bad reads forfeit to the pot.",
+    body: "Payout weights two things: your trading P&L and whether you correctly called the agent's hidden objective. Profit without a read barely pays; a clean read multiplies it.",
   },
   {
-    title: "The lab compounds",
-    body: "A small curve fee on every round seeds new agents and hidden objectives, funds the leaderboard, and runs seasonal resets. More players means richer pots and harder minds.",
+    title: "Play money, by design",
+    body: "Credits are play-money and persist in your browser — no wallet, no real funds at risk. On-chain settlement is an optional layer; leaderboards and seasons are on the roadmap, not faked here.",
   },
 ];
 
@@ -32,9 +32,9 @@ export function Incentives() {
             <p className="mt-4 text-lg leading-relaxed text-ink-muted">
               A reflexive incentive game: the agent reacts to you, you react to it,
               and the curve reacts to both — a small risk/reward simulation of
-              reading intent. Why people play, why it pays, and why the lab keeps
-              running. One loop, settled on-chain so stakes, payouts, and the
-              leaderboard are verifiable.
+              reading intent. It runs on play money — you carry a credit balance,
+              ante up each round, and your payout turns on how you trade and whether
+              you read the mind.
             </p>
           </div>
         </Reveal>
