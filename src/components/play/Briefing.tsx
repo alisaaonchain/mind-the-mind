@@ -1,14 +1,16 @@
 "use client";
 
 import type { ChainSeed } from "@/lib/game/cosmos";
+import { STAKE } from "@/lib/game/economy";
 
 type Props = {
   seed: ChainSeed | null;
   loading: boolean;
+  openingPrice: number;
   onBegin: () => void;
 };
 
-export function Briefing({ seed, loading, onBegin }: Props) {
+export function Briefing({ seed, loading, openingPrice, onBegin }: Props) {
   const verifyUrl = seed
     ? `${seed.source}/cosmos/base/tendermint/v1beta1/blocks/${seed.height}`
     : null;
@@ -75,6 +77,19 @@ export function Briefing({ seed, loading, onBegin }: Props) {
                 unavailable — using a local seed for this round.
               </p>
             )}
+          </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <div className="rounded-xl border border-line bg-surface-soft p-3">
+              <div className="label text-[0.6rem]">Buy-in</div>
+              <div className="mt-0.5 font-mono text-sm text-ink">{STAKE} credits</div>
+            </div>
+            <div className="rounded-xl border border-line bg-surface-soft p-3">
+              <div className="label text-[0.6rem]">Opening price</div>
+              <div className="mt-0.5 font-mono text-sm text-ink">
+                {loading ? "—" : openingPrice.toFixed(3)}
+              </div>
+            </div>
           </div>
 
           <button

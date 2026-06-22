@@ -1,30 +1,51 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { QUESTIONS } from "@/lib/game/questions";
 import { callAgent } from "@/lib/game/llm";
 import { settleRound, type SettleResult } from "@/lib/game/settleClient";
+import { payout, STAKE, READ_MULTIPLIER } from "@/lib/game/economy";
+import type { Exchange } from "@/lib/game/useGame";
 import type { Agent, GameResult, TickRecord } from "@/lib/game/types";
 
 type Props = {
   agent: Agent;
   history: TickRecord[];
-  asked: string[];
+  transcript: Exchange[];
   result: GameResult;
   seedBlock: number;
+  startValue: number;
+  credits: number;
+  onAward: (net: number) => void;
   onReplay: () => void;
 };
 
-export function RevealScreen({ agent, history, asked, result, seedBlock, onReplay }: Props) {
+export function RevealScreen({
+  agent,
+  history,
+  transcript,
+  result,
+  seedBlock,
+  startValue,
+  credits,
+  onAward,
+  onReplay,
+}: Props) {
   const acted = history.filter((h) => h.kind !== "hold");
   const [debrief, setDebrief] = useState<string | null>(null);
   const [settle, setSettle] = useState<SettleResult | "pending" | null>("pending");
   const requested = useRef(false);
 
+  const pnlFraction = startValue > 0 ? result.playerPnl / startValue : 0;
+  const multiplier = result.mindRead ? READ_MULTIPLIER : 1;
+  const payoutValue = payout(STAKE, pnlFraction, result.mindRead);
+  const net = payoutValue - STAKE;
+
   useEffect(() => {
     if (requested.current) return;
     requested.current = true;
     let live = true;
+
+    onAward(net);
 
     const actions =
       acted.map((h) => `${h.t}s ${h.kind}`).join(", ") || "held the entire round";
@@ -108,6 +129,35 @@ export function RevealScreen({ agent, history, asked, result, seedBlock, onRepla
         </div>
       </div>
 
+      {/* play-money payout */}
+      <div className="card p-5 sm:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="label">Payout · play money</div>
+          <div className="font-mono text-sm text-ink-muted">
+            balance <span className="font-semibold text-ink">{credits.toFixed(0)}</span> credits
+          </div>
+        </div>
+        <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-sm">
+          <span className="text-ink-muted">buy-in {STAKE}</span>
+          <span className="text-ink-faint">×</span>
+          <span className="text-ink-muted">
+            (1 {pnlFraction >= 0 ? "+" : "−"} {Math.abs(pnlFraction * 100).toFixed(1)}%)
+          </span>
+          <span className="text-ink-faint">×</span>
+          <span className="text-ink-muted">read {multiplier.toFixed(1)}×</span>
+          <span className="text-ink-faint">=</span>
+          <span className="font-semibold text-ink">{payoutValue.toFixed(0)}</span>
+          <span
+            className={`ml-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
+              net >= 0 ? "bg-brand-soft text-brand" : "bg-accent-soft text-accent-ink"
+            }`}
+          >
+            {net >= 0 ? "+" : ""}
+            {net.toFixed(0)} net
+          </span>
+        </div>
+      </div>
+
       <div className="grid gap-6 lg:grid-cols-2">
         {/* the hidden objective + reasoning trace */}
         <div className="card overflow-hidden">
@@ -171,20 +221,15 @@ export function RevealScreen({ agent, history, asked, result, seedBlock, onRepla
           <div className="p-6">
             <div className="label mb-3">What it told you · interrogation recap</div>
             <ol className="space-y-3">
-              {asked.map((qId, i) => {
-                const q = QUESTIONS.find((x) => x.id === qId);
-                return (
-                  <li key={qId} className="rounded-lg bg-surface-soft px-3.5 py-3">
-                    <div className="mb-1 font-mono text-[0.66rem] uppercase tracking-[0.14em] text-ink-faint">
-                      Q{i + 1}
-                    </div>
-                    <p className="text-sm font-medium text-ink">{q?.text}</p>
-                    <p className="mt-1.5 font-mono text-sm text-brand">
-                      {agent.answers[qId] ?? "No comment."}
-                    </p>
-                  </li>
-                );
-              })}
+              {transcript.map((ex, i) => (
+                <li key={i} className="rounded-lg bg-surface-soft px-3.5 py-3">
+                  <div className="mb-1 font-mono text-[0.66rem] uppercase tracking-[0.14em] text-ink-faint">
+                    Q{i + 1}
+                  </div>
+                  <p className="text-sm font-medium text-ink">{ex.q}</p>
+                  <p className="mt-1.5 font-mono text-sm text-brand">{ex.a}</p>
+                </li>
+              ))}
             </ol>
             <p className="mt-4 text-sm leading-relaxed text-ink-muted">
               Line its words up against the reasoning on the left. The distance
