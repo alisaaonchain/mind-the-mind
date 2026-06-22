@@ -8,6 +8,7 @@ import {
   START_POOL,
   START_WALLET,
 } from "@/lib/game/agents";
+import type { ChainSeed } from "@/lib/game/cosmos";
 import type {
   ActionKind,
   Agent,
@@ -20,6 +21,7 @@ import type {
 type State = {
   phase: Phase;
   agentIndex: number;
+  seed: ChainSeed | null;
   asked: string[];
   pool: Pool;
   player: Wallet;
@@ -33,10 +35,18 @@ type State = {
 const value = (w: Wallet, p: Pool): number => w.cash + w.tokens * price(p);
 const START_VALUE = START_WALLET.cash + START_WALLET.tokens * price(START_POOL);
 
-function freshState(agentIndex: number): State {
+// Deterministically pick the agent from the chain seed (verifiable: same block
+// height always yields the same subject), or random when there's no seed.
+function pickAgent(seed: ChainSeed | null): number {
+  if (seed) return seed.height % AGENTS.length;
+  return Math.floor(Math.random() * AGENTS.length);
+}
+
+function freshState(seed: ChainSeed | null): State {
   return {
-    phase: "interrogation",
-    agentIndex,
+    phase: "briefing",
+    agentIndex: pickAgent(seed),
+    seed,
     asked: [],
     pool: { ...START_POOL },
     player: { ...START_WALLET },
@@ -126,18 +136,27 @@ function applyTick(s: State): State {
 }
 
 export function useGame() {
-  const [state, setState] = useState<State>(() =>
-    freshState(Math.floor(Math.random() * AGENTS.length)),
-  );
+  const [state, setState] = useState<State>(() => freshState(null));
   const setRef = useRef(setState);
   setRef.current = setState;
 
-  // tick loop while trading
   useEffect(() => {
     if (state.phase !== "trading") return;
     const id = window.setInterval(() => setRef.current((s) => applyTick(s)), 1000);
     return () => window.clearInterval(id);
   }, [state.phase]);
+
+  const applySeed = useCallback((seed: ChainSeed | null) => {
+    setState((s) =>
+      s.phase === "briefing" && seed
+        ? { ...s, seed, agentIndex: pickAgent(seed) }
+        : s,
+    );
+  }, []);
+
+  const beginInterrogation = useCallback(() => {
+    setState((s) => (s.phase === "briefing" ? { ...s, phase: "interrogation" } : s));
+  }, []);
 
   const askQuestion = useCallback((qId: string) => {
     setState((s) =>
@@ -160,7 +179,7 @@ export function useGame() {
   }, []);
 
   const reset = useCallback(() => {
-    setState(freshState(Math.floor(Math.random() * AGENTS.length)));
+    setState(freshState(null));
   }, []);
 
   const agent: Agent = AGENTS[state.agentIndex]!;
@@ -194,6 +213,7 @@ export function useGame() {
   return {
     phase: state.phase,
     agent,
+    seed: state.seed,
     asked: state.asked,
     t: state.t,
     secondsLeft: ROUND_SECONDS - state.t,
@@ -207,6 +227,8 @@ export function useGame() {
     startValue: START_VALUE,
     guessId: state.guessId,
     result,
+    applySeed,
+    beginInterrogation,
     askQuestion,
     beginTrading,
     trade,
