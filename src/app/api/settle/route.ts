@@ -1,4 +1,4 @@
-import { JsonRpcProvider, Wallet, Contract, encodeBytes32String } from "ethers";
+import { JsonRpcProvider, Wallet, Interface, encodeBytes32String } from "ethers";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -56,20 +56,22 @@ export async function POST(req: Request) {
   try {
     const provider = new JsonRpcProvider(rpc);
     const wallet = new Wallet(key, provider);
-    const contract = new Contract(address, ABI, wallet);
+    const iface = new Interface(ABI);
 
     const agent = encodeBytes32String(String(body.agent ?? "").slice(0, 31));
     const seedBlock = BigInt(Math.max(0, Math.floor(Number(body.seedBlock) || 0)));
 
-    // tx.hash is available as soon as it's broadcast; don't block on confirmation.
-    const tx = await contract.recordRound(
+    const data = iface.encodeFunctionData("recordRound", [
       seedBlock,
       agent,
       scaled(body.playerPnl),
       scaled(body.agentPnl),
       Boolean(body.mindRead),
       Boolean(body.won),
-    );
+    ]);
+
+    // tx.hash is available as soon as it's broadcast; don't block on confirmation.
+    const tx = await wallet.sendTransaction({ to: address, data });
 
     const explorer = process.env.EXPLORER_TX_URL
       ? `${process.env.EXPLORER_TX_URL.replace(/\/$/, "")}/${tx.hash}`
