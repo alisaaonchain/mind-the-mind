@@ -3,6 +3,8 @@
 // is configured or the upstream call fails, we return { text: null } and the
 // client falls back to the deterministic scripted agent.
 
+import { rateLimit, clientIp } from "@/lib/rateLimit";
+
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -50,6 +52,15 @@ export async function GET() {
 export async function POST(req: Request) {
   const key = process.env.OPENROUTER_API_KEY;
   if (!key) return Response.json({ text: null, reason: "no_key" });
+
+  // Abuse protection: per-IP and a global per-instance cap, so a stranger can't
+  // burn the OpenRouter key.
+  if (
+    !rateLimit(`agent:${clientIp(req)}`, 15, 60_000) ||
+    !rateLimit("agent:global", 120, 60_000)
+  ) {
+    return Response.json({ text: null, reason: "rate_limited" });
+  }
 
   let body: Body;
   try {

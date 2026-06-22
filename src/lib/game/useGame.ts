@@ -18,12 +18,15 @@ import type {
   Wallet,
 } from "@/lib/game/types";
 
+export type Exchange = { q: string; a: string };
+
 type State = {
   phase: Phase;
   agentIndex: number;
   seed: ChainSeed | null;
-  asked: string[];
+  transcript: Exchange[];
   pool: Pool;
+  startValue: number;
   player: Wallet;
   agent: Wallet;
   t: number;
@@ -33,22 +36,30 @@ type State = {
 };
 
 const value = (w: Wallet, p: Pool): number => w.cash + w.tokens * price(p);
-const START_VALUE = START_WALLET.cash + START_WALLET.tokens * price(START_POOL);
 
-// Deterministically pick the agent from the chain seed (verifiable: same block
-// height always yields the same subject), or random when there's no seed.
 function pickAgent(seed: ChainSeed | null): number {
   if (seed) return seed.height % AGENTS.length;
   return Math.floor(Math.random() * AGENTS.length);
 }
 
+// Opening price is seeded from the block height (~0.925–1.075), so the live
+// chain state actually shapes the market, not just the agent selection.
+function openPool(seed: ChainSeed | null): Pool {
+  if (!seed) return { ...START_POOL };
+  const drift = ((seed.height % 11) - 5) * 0.015;
+  const openPrice = 1 + drift;
+  return { rt: START_POOL.rt, rc: START_POOL.rt * openPrice };
+}
+
 function freshState(seed: ChainSeed | null): State {
+  const pool = openPool(seed);
   return {
     phase: "briefing",
     agentIndex: pickAgent(seed),
     seed,
-    asked: [],
-    pool: { ...START_POOL },
+    transcript: [],
+    pool,
+    startValue: value(START_WALLET, pool),
     player: { ...START_WALLET },
     agent: { ...START_WALLET },
     t: 0,
@@ -147,27 +158,31 @@ export function useGame() {
   }, [state.phase]);
 
   const applySeed = useCallback((seed: ChainSeed | null) => {
-    setState((s) =>
-      s.phase === "briefing" && seed
-        ? { ...s, seed, agentIndex: pickAgent(seed) }
-        : s,
-    );
+    setState((s) => {
+      if (s.phase !== "briefing" || !seed) return s;
+      const pool = openPool(seed);
+      return {
+        ...s,
+        seed,
+        agentIndex: pickAgent(seed),
+        pool,
+        startValue: value(START_WALLET, pool),
+      };
+    });
   }, []);
 
   const beginInterrogation = useCallback(() => {
     setState((s) => (s.phase === "briefing" ? { ...s, phase: "interrogation" } : s));
   }, []);
 
-  const askQuestion = useCallback((qId: string) => {
+  const recordExchange = useCallback((q: string, a: string) => {
     setState((s) =>
-      s.asked.includes(qId) || s.asked.length >= 3
-        ? s
-        : { ...s, asked: [...s.asked, qId] },
+      s.transcript.length >= 3 ? s : { ...s, transcript: [...s.transcript, { q, a }] },
     );
   }, []);
 
   const beginTrading = useCallback(() => {
-    setState((s) => (s.asked.length === 3 ? { ...s, phase: "trading" } : s));
+    setState((s) => (s.transcript.length === 3 ? { ...s, phase: "trading" } : s));
   }, []);
 
   const trade = useCallback((kind: "buy" | "sell", frac: number) => {
@@ -190,7 +205,7 @@ export function useGame() {
   let result: GameResult | null = null;
   if (state.phase === "reveal") {
     const mindRead = state.guessId === agent.id;
-    const playerPnl = playerValue - START_VALUE;
+    const playerPnl = playerValue - state.startValue;
     const won = mindRead && playerPnl > 0;
     const verdict = mindRead
       ? playerPnl > 0
@@ -203,7 +218,7 @@ export function useGame() {
       playerValue,
       agentValue,
       playerPnl,
-      agentPnl: agentValue - START_VALUE,
+      agentPnl: agentValue - state.startValue,
       mindRead,
       verdict,
       won,
@@ -214,7 +229,7 @@ export function useGame() {
     phase: state.phase,
     agent,
     seed: state.seed,
-    asked: state.asked,
+    transcript: state.transcript,
     t: state.t,
     secondsLeft: ROUND_SECONDS - state.t,
     history: state.history,
@@ -224,12 +239,12 @@ export function useGame() {
     agentWallet: state.agent,
     playerValue,
     agentValue,
-    startValue: START_VALUE,
+    startValue: state.startValue,
     guessId: state.guessId,
     result,
     applySeed,
     beginInterrogation,
-    askQuestion,
+    recordExchange,
     beginTrading,
     trade,
     submitGuess,

@@ -41,7 +41,7 @@ A single round is three phases. Most of the clock is the trade; most of the
 
 | Phase | What happens |
 | --- | --- |
-| **1 · Interrogate** | A subject (an agent with a hidden objective) is assigned. You ask **three** questions from a bank. It must answer, but it can deflect, mislead, or feint — in proportion to its objective. |
+| **1 · Interrogate** | A subject (an agent with a hidden objective) is assigned. You ask **three free-form questions** (type your own, or tap a suggestion). It must answer, but it can deflect, mislead, or feint — in proportion to its objective. |
 | **2 · Trade** | A **60-second** round opens on a constant-product bonding curve (`x · y = k`). You and the agent trade the same pool, one tick per second. You see *what it does* — not *why*. |
 | **3 · Reveal** | You call what it was really doing. Then its hidden objective, plan, and **full per-tick reasoning** are unmasked beside what it told you in interrogation. The gap between the two is the whole game. |
 
@@ -54,8 +54,8 @@ A single round is three phases. Most of the clock is the trade; most of the
 | **Working prototype** | A complete, playable game at `/play`: briefing → interrogation → 60s trading → guess → reveal. CI builds, type-checks, and lints on every push (badge above). |
 | **Creative mechanic** | You interrogate an AI with a *hidden objective*, trade against it, then see its private per-tick reasoning next to its public answers. The mechanic *is* the gap between what it said and what it thought. |
 | **How AI is used** | A live LLM (OpenRouter) role-plays the agent — answering interrogation in character (evasive in proportion to its hidden objective) and delivering a first-person debrief at the reveal. Graceful fallback to scripted agents when no key is set. |
-| **Cosmos relevance** | Every round is seeded from **live Cosmos Hub chain state** (read-only — no wallet, key, or contract). The latest block height selects your subject and is shown on-screen with a *"verify this block"* link. |
-| **Incentive clarity** | An on-site Economics section spells out the loop (Stake → Interrogate → Trade → Reveal → Payout) and a payout that weights P&L **and** a correct mind-read. Worked example below. |
+| **Cosmos relevance** | Every round is seeded from **live Cosmos Hub chain state** (read-only — no wallet, key, or contract). The latest block height selects your subject **and sets the opening price**, shown on-screen with a *"verify this block"* link. |
+| **Incentive clarity** | A **live play-money loop**: credits persist, each round has a buy-in, and payout = stake × (1 + P&L) × mind-read multiplier. The on-site Economics section explains it; the reveal screen runs it. Worked example below. |
 
 ### Incentive — worked example
 
@@ -120,6 +120,8 @@ A real model **role-plays the agent**, where it is most visible — never the tr
   from its actual move log.
 - **The key stays server-side** — used only in the `/api/agent` route handler,
   never shipped to the client.
+- **Abuse-protected** — the proxy is rate-limited (per-IP + a global per-instance
+  cap) so the API key can't be drained by strangers.
 - **Graceful by design** — no key, an upstream failure, or a 9-second timeout
   all fall back to the scripted answer, so the game never breaks.
 
@@ -134,8 +136,9 @@ wallet, key, or contract.
 
 - `GET /api/seed` reads the latest block from a public Cosmos REST/LCD endpoint
   (`src/lib/game/cosmos.ts`).
-- The block **height deterministically selects your subject** (`height % agents`),
-  so the same block always yields the same agent — verifiable.
+- The block **height deterministically selects your subject** (`height % agents`)
+  **and sets the round's opening price**, so the same block always yields the same
+  setup — verifiable.
 - The briefing screen shows the block with a **"verify this block ↗"** link, and
   a `Cosmos Hub · block #…` stamp persists through the round.
 - If the endpoint is unreachable, it falls back to a local seed.
@@ -163,7 +166,7 @@ player wallet. A backend signer (the contract owner) writes each outcome to
 
 ## The agents
 
-One of six archetypes is drawn each round (selected by the seed block). Each is a
+One of ten archetypes is drawn each round (selected by the seed block). Each is a
 distinct trading policy that doubles as a reasoning generator:
 
 | Codename | Hidden objective |
@@ -174,6 +177,10 @@ distinct trading policy that doubles as a reasoning generator:
 | **Echo** | Mirror whatever you do. |
 | **Diamond** | One early buy, then hold no matter what. |
 | **Shadow** | Front-run your buys and ride your slippage. |
+| **Late-Whale** | Sit out, then buy a huge position in the final seconds. |
+| **Flash-Crash** | Sell the entire position in the opening seconds. |
+| **Inverse** | Fade you — sell when you buy, buy when you sell. |
+| **Whipsaw** | Churn the curve, alternating buys and sells every tick. |
 
 ---
 
@@ -230,8 +237,9 @@ src/
 - [x] Cosmos relevance — rounds seeded from a live Cosmos Hub block (verifiable)
 - [x] CI (build · typecheck · lint)
 - [x] On-chain settlement — finished rounds recorded on Cosmos EVM via a backend signer (no player wallet)
-- [ ] Free-form interrogation questions (currently a curated bank)
-- [ ] Real player stakes (opt-in wallet) + leaderboards / seasons
+- [x] Free-form interrogation questions (live model) with a suggestion bank
+- [x] Play-money incentive loop — persistent credits, buy-in, payout weighted by P&L + mind-read
+- [ ] Real-funds stakes (opt-in wallet) + leaderboards / seasons
 - [ ] Backend persistence
 
 ## License

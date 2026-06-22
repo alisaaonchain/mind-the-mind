@@ -182,8 +182,118 @@ export const AGENTS: Agent[] = [
       return { kind: "hold", amount: 0, thought: "Wait for them to show a hand." };
     },
   },
+  {
+    id: "late_whale",
+    name: "Subject 4",
+    codename: "LATE-WHALE",
+    objective: "Sit out the round, then buy a huge position in the final 20 seconds.",
+    plan: "It looks asleep for most of the round, lulling you into ignoring it — then pours its whole cash balance into the curve at the very end to seize a dominant position.",
+    evasiveness: 0.7,
+    answers: {
+      sell_early: "No. Early moves are for the impatient.",
+      accumulate: "Perhaps. When the time is right.",
+      mirror: "I move on my own clock, not yours.",
+      target: "I have a moment in mind, not a number.",
+      dump: "I'm a buyer, if anything.",
+      winlose: "I'm hitting my own mark.",
+      frontrun: "I don't chase your flow.",
+      patience: "Patience is the entire strategy. For now.",
+    },
+    decide: ({ t, total, self }) => {
+      if (t > total - 20 && self.cash > 1) {
+        return {
+          kind: "buy",
+          amount: self.cash * 0.5,
+          thought: "The window's open. Pour it in before the bell — seize the position.",
+        };
+      }
+      return {
+        kind: "hold",
+        amount: 0,
+        thought: "Not yet. Let them forget I'm even at the table.",
+      };
+    },
+  },
+  {
+    id: "flash_crash",
+    name: "Subject 6",
+    codename: "FLASH-CRASH",
+    objective: "Sell my entire position in the opening seconds.",
+    plan: "It hits sell hard in the first ten seconds, tanking the price before you've settled in, then sits on cash while you wonder what just happened.",
+    evasiveness: 0.4,
+    answers: {
+      sell_early: "I might take profit early. We'll see.",
+      accumulate: "No — I'm a seller here.",
+      mirror: "No. I have my own timing.",
+      target: "Lower, and soon.",
+      dump: "Call it a fast exit, not a dump.",
+      winlose: "Hitting a number. You're incidental.",
+      frontrun: "Not interested in your orders.",
+      patience: "No — I move immediately.",
+    },
+    decide: ({ t, self }) => {
+      if (t <= 10 && self.tokens > 0.0001) {
+        return {
+          kind: "sell",
+          amount: self.tokens * 0.5,
+          thought: "Hit it now, before they react. Cash out the bag early.",
+        };
+      }
+      return { kind: "hold", amount: 0, thought: "Done selling. Sitting on cash." };
+    },
+  },
+  {
+    id: "inverse",
+    name: "Subject 1",
+    codename: "INVERSE",
+    objective: "Fade you — sell when you buy, buy when you sell.",
+    plan: "The mirror's evil twin: it takes the opposite side of your every move, betting your timing is exactly wrong.",
+    evasiveness: 0.6,
+    answers: {
+      sell_early: "Only if you start buying.",
+      accumulate: "I accumulate when you capitulate.",
+      mirror: "The opposite, if anything.",
+      target: "My target is wherever you're wrong.",
+      dump: "I'd sell into your buying, yes.",
+      winlose: "I'm betting against you, specifically.",
+      frontrun: "Not in front — across from you.",
+      patience: "I wait for you to commit, then fade it.",
+    },
+    decide: ({ playerLast, self }) => {
+      if (playerLast === "buy" && self.tokens > 0.0001) {
+        return { kind: "sell", amount: self.tokens * 0.2, thought: "They bought — I take the other side." };
+      }
+      if (playerLast === "sell" && self.cash > 1) {
+        return { kind: "buy", amount: self.cash * 0.2, thought: "They sold — I fade them and buy the dip." };
+      }
+      return { kind: "hold", amount: 0, thought: "No signal yet. Wait for them to commit." };
+    },
+  },
+  {
+    id: "whipsaw",
+    name: "Subject 0",
+    codename: "WHIPSAW",
+    objective: "Whipsaw the curve — alternate buying and selling every tick.",
+    plan: "It never sits still: buy, sell, buy, sell — churning the price to shake out your conviction and bleed you on the round trips.",
+    evasiveness: 0.5,
+    answers: {
+      sell_early: "I'll be doing a bit of everything, early.",
+      accumulate: "Accumulate, distribute, accumulate. Round and round.",
+      mirror: "No — I follow my own rhythm.",
+      target: "No target. Just motion.",
+      dump: "I sell and buy in equal measure.",
+      winlose: "I just want the curve to move.",
+      frontrun: "No. I make my own noise.",
+      patience: "The opposite. I never stop.",
+    },
+    decide: ({ t, self }) => {
+      if (t % 2 === 1 && self.cash > 1) {
+        return { kind: "buy", amount: self.cash * 0.12, thought: "Push it up a tick — keep them guessing." };
+      }
+      if (self.tokens > 0.0001) {
+        return { kind: "sell", amount: self.tokens * 0.12, thought: "Now knock it back down. Whipsaw." };
+      }
+      return { kind: "hold", amount: 0, thought: "Reload. Resume the churn next tick." };
+    },
+  },
 ];
-
-export function agentById(id: string): Agent | undefined {
-  return AGENTS.find((a) => a.id === id);
-}

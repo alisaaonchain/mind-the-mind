@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useGame } from "@/lib/game/useGame";
+import { useCredits } from "@/lib/game/useCredits";
 import { fetchChainSeed } from "@/lib/game/seedClient";
 import { Briefing } from "@/components/play/Briefing";
 import { InterrogationRoom } from "@/components/play/InterrogationRoom";
@@ -19,6 +20,7 @@ function stepIndex(phase: string): number {
 
 export function Lab() {
   const g = useGame();
+  const { credits, adjust } = useCredits();
   const [seedLoading, setSeedLoading] = useState(true);
   const active = stepIndex(g.phase);
 
@@ -73,6 +75,11 @@ export function Lab() {
                   </span>
                 </span>
               ) : null}
+              <span className="badge">
+                <span className="font-mono text-[0.7rem] text-ink-muted">
+                  Credits <span className="font-semibold text-ink">{credits.toFixed(0)}</span>
+                </span>
+              </span>
             </div>
             <h1 className="mt-4 font-display text-3xl font-semibold tracking-[-0.02em] text-ink sm:text-4xl">
               {title}
@@ -102,14 +109,18 @@ export function Lab() {
         </div>
 
         {g.phase === "briefing" ? (
-          <Briefing seed={g.seed} loading={seedLoading} onBegin={g.beginInterrogation} />
+          <Briefing
+            seed={g.seed}
+            loading={seedLoading}
+            openingPrice={g.price}
+            onBegin={g.beginInterrogation}
+          />
         ) : null}
 
         {g.phase === "interrogation" ? (
           <InterrogationRoom
             agent={g.agent}
-            asked={g.asked}
-            onAsk={g.askQuestion}
+            onRecord={g.recordExchange}
             onBegin={g.beginTrading}
           />
         ) : null}
@@ -136,9 +147,12 @@ export function Lab() {
           <RevealScreen
             agent={g.agent}
             history={g.history}
-            asked={g.asked}
+            transcript={g.transcript}
             result={g.result}
             seedBlock={g.seed?.height ?? 0}
+            startValue={g.startValue}
+            credits={credits}
+            onAward={adjust}
             onReplay={g.reset}
           />
         ) : null}
