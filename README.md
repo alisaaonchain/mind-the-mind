@@ -33,13 +33,33 @@ npm run typecheck  # strict TS check
 npm run lint       # next lint
 ```
 
+## Live LLM agent (optional)
+
+By default the agent runs on deterministic scripted archetypes — no key needed.
+Add an [OpenRouter](https://openrouter.ai/keys) key to have a real model role-play
+the agent: it answers your interrogation questions in character (evasive in
+proportion to the agent's hidden objective) and delivers a first-person "debrief"
+on the reveal screen.
+
+```bash
+cp .env.example .env
+# then set OPENROUTER_API_KEY (and optionally OPENROUTER_MODEL)
+```
+
+The key is used only server-side in the `/api/agent` route handler. Every call
+degrades gracefully: no key, a failure, or a timeout falls back to the scripted
+answer, so the game always works. Trading decisions stay deterministic (for
+latency and fairness) — the model drives the *language*, not the trades.
+
 ## Roadmap
 
 - [x] Landing page
 - [x] `/play` — interrogation room (pick 3 questions; the agent answers, evasively)
 - [x] `/play` — 60s tick engine on a constant-product bonding curve, you vs the agent
 - [x] `/play` — reveal screen (guess its objective, then see the per-tick reasoning trace)
-- [ ] Real LLM-driven agents + free-form questions (currently deterministic archetypes)
+- [x] Live LLM-driven agent answers + reveal debrief via OpenRouter (optional, with fallback)
+- [ ] Free-form interrogation questions (currently a fixed bank)
+- [ ] LLM-driven trade decisions (currently deterministic policies)
 - [ ] Backend + persistence / leaderboards
 
 ## The game (`/play`)

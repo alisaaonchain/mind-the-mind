@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { QUESTIONS } from "@/lib/game/questions";
+import { callAgent } from "@/lib/game/llm";
 import type { Agent, GameResult, TickRecord } from "@/lib/game/types";
 
 type Props = {
@@ -13,6 +15,28 @@ type Props = {
 
 export function RevealScreen({ agent, history, asked, result, onReplay }: Props) {
   const acted = history.filter((h) => h.kind !== "hold");
+  const [debrief, setDebrief] = useState<string | null>(null);
+  const requested = useRef(false);
+
+  useEffect(() => {
+    if (requested.current) return;
+    requested.current = true;
+    const actions =
+      acted.map((h) => `${h.t}s ${h.kind}`).join(", ") || "held the entire round";
+    let live = true;
+    callAgent({
+      mode: "debrief",
+      codename: agent.codename,
+      objective: agent.objective,
+      actions,
+    }).then((text) => {
+      if (live) setDebrief(text);
+    });
+    return () => {
+      live = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -66,6 +90,17 @@ export function RevealScreen({ agent, history, asked, result, onReplay }: Props)
                 {agent.objective}
               </p>
               <p className="mt-2 text-sm leading-relaxed text-ink-muted">{agent.plan}</p>
+              {debrief ? (
+                <div className="mt-3 rounded-lg border border-accent/40 bg-surface px-3 py-2.5">
+                  <div className="mb-1 flex items-center gap-1.5 font-mono text-[0.62rem] uppercase tracking-[0.14em] text-accent-ink">
+                    <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                    Agent debrief · live model
+                  </div>
+                  <p className="text-[0.86rem] italic leading-relaxed text-ink">
+                    &ldquo;{debrief}&rdquo;
+                  </p>
+                </div>
+              ) : null}
             </div>
 
             <div className="label mb-3 mt-6">Per-tick reasoning · what it was thinking</div>
